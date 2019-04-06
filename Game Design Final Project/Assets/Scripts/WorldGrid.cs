@@ -6,6 +6,7 @@ public class WorldGrid : MonoBehaviour {
 	public Room room1, room2, room3;
 
 	void Start() {
+		/*
 		Room r3 = Instantiate(room3);
 		r3.transform.SetParent(gameObject.transform);
 		r3.transform.position = new Vector3(
@@ -22,5 +23,6 @@ public class WorldGrid : MonoBehaviour {
 			0f,
 			0f
 		);
+		*/
 	}
 }
