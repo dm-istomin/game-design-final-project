@@ -8,19 +8,44 @@ public class Actor : MonoBehaviour {
 	protected Animator animator;
 	SpriteRenderer spriteRenderer;
 
-	protected int facing = Facing.Down;
+	protected int facing {
+		get {
+			return _facing;
+		}
+		set {
+			if (_facing != value && 
+				!((_facing == Facing.Left && value == Facing.Right) || (_facing == Facing.Right && value == Facing.Left))) {
+				// Needs to change character controllers
+				if (value == Facing.Up) {
+					animator.runtimeAnimatorController = controllerUp;
+				}
+				else if (value == Facing.Down) {
+					animator.runtimeAnimatorController = controllerDown;
+				}
+				else {
+					animator.runtimeAnimatorController = controllerRight;
+				}
+			}
+			_facing = value;
+		}
+	}
+	int _facing;
 
 	protected int hp = 3;
 	protected bool hasControl = true;
 
 	protected float radius = 0.5f;
 
+	public AnimatorOverrideController controllerUp;
+	public AnimatorOverrideController controllerRight;
+	public AnimatorOverrideController controllerDown;
 	public Weapon weapon;
 
 	protected void Awake() {
 		rigidbody = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
 		spriteRenderer = GetComponent<SpriteRenderer>();
+		facing = Facing.Down;
 //		radius = GetComponentInChildren<Collider>().transform.lossyScale.x / 2f;
 	}
 
@@ -43,7 +68,7 @@ public class Actor : MonoBehaviour {
 		}
 	}
 
-	public void takeDamage(int damage) {
+	public virtual void takeDamage(int damage) {
 		hp -= damage;
 		animator.SetInteger("HP", hp);
 		animator.SetTrigger("Flinch");

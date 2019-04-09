@@ -32,7 +32,7 @@ public class Enemy : Actor {
 			return _destination;
 		}
 		set {
-			_destination = destination;
+			_destination = value;
 			destinationTimer = 0f;
 		}
 	}
@@ -62,7 +62,7 @@ public class Enemy : Actor {
 			}
 			else if (value == State.Wander) {
 				speed = wanderSpeed;
-				Vector2 rand = Random.insideUnitCircle.normalized * Random.Range(8f, 20f);
+				Vector2 rand = Random.insideUnitCircle.normalized * Random.Range(2f, 6f);
 				destination = startingPosition + new Vector3(rand.x, rand.y, 0);
 			}
 			else if (value == State.Alert) {
@@ -102,34 +102,34 @@ public class Enemy : Actor {
 	}
 
 	void stateSpecificUpdates() {
-//		transform.GetChild(1).gameObject.SetActive(debugVision && state != State.Chase);
-//		transform.GetChild(2).gameObject.SetActive(debugVision && state == State.Chase);
-//		if (debugVision) {
-//			if (state == State.Chase || state == State.Alert) {
-//				transform.GetChild(2).localScale = new Vector3(2f * trackDistance, 0.5f, 2f * trackDistance);
-//			}
-//			else {
-//				Mesh m = transform.GetChild(1).GetComponent<MeshFilter>().mesh;
-//				m.vertices = new Vector3[] {
-//					new Vector3(0, 0, 0),
-//					Vector3.up * spotDistance,
-//					Quaternion.Euler(0, 0, -FIELD_OF_VIEW_ANGLE) * Vector3.up * spotDistance,
-//					Quaternion.Euler(0, 0, FIELD_OF_VIEW_ANGLE) * Vector3.up * spotDistance,
-//				};
-//				if (facing == Facing.Up) {
-//					transform.GetChild(1).localRotation = Quaternion.Euler(0, 0, 0);
-//				}
-//				else if (facing == Facing.Right) {
-//					transform.GetChild(1).localRotation = Quaternion.Euler(0, 0, -90);
-//				}
-//				else if (facing == Facing.Down) {
-//					transform.GetChild(1).localRotation = Quaternion.Euler(0, 0, 180);
-//				}
-//				else {
-//					transform.GetChild(1).localRotation = Quaternion.Euler(0, 0, 90);
-//				}
-//			}
-//		}
+		transform.GetChild(0).gameObject.SetActive(debugVision && state != State.Chase);
+		transform.GetChild(1).gameObject.SetActive(debugVision && state == State.Chase);
+		if (debugVision) {
+			if (state == State.Chase || state == State.Alert) {
+				transform.GetChild(1).localScale = new Vector3(2f * trackDistance, 0.5f, 2f * trackDistance);
+			}
+			else {
+				Mesh m = transform.GetChild(0).GetComponent<MeshFilter>().mesh;
+				m.vertices = new Vector3[] {
+					new Vector3(0, 0, 0),
+					Vector3.up * spotDistance,
+					Quaternion.Euler(0, 0, -FIELD_OF_VIEW_ANGLE) * Vector3.up * spotDistance,
+					Quaternion.Euler(0, 0, FIELD_OF_VIEW_ANGLE) * Vector3.up * spotDistance,
+				};
+				if (facing == Facing.Up) {
+					transform.GetChild(0).localRotation = Quaternion.Euler(0, 0, 0);
+				}
+				else if (facing == Facing.Right) {
+					transform.GetChild(0).localRotation = Quaternion.Euler(0, 0, -90);
+				}
+				else if (facing == Facing.Down) {
+					transform.GetChild(0).localRotation = Quaternion.Euler(0, 0, 180);
+				}
+				else {
+					transform.GetChild(0).localRotation = Quaternion.Euler(0, 0, 90);
+				}
+			}
+		}
 
 		if (Time.timeScale == 0f) {
 			return; // Skip if the game is paused
@@ -190,7 +190,26 @@ public class Enemy : Actor {
 		}
 	}
 
-	void OnCollisionEnter(Collision c) {
+	public override void takeDamage(int damage) {
+		if (state == State.Chase) {
+			hp -= damage;
+		}
+		else {
+			// Instant kill
+			hp = 0;
+		}
+
+		if (hp <= 0) {
+			Destroy(gameObject);
+			return;
+		}
+
+		animator.SetInteger("HP", hp);
+		animator.SetTrigger("Flinch");
+		hasControl = false;
+	}
+
+	void OnCollisionEnter2D(Collision2D c) {
 		if (state == State.Wait || state == State.Wander) {
 			if (c.gameObject.layer == Layers.PLAYER) {
 				state = State.Alert;
@@ -199,7 +218,7 @@ public class Enemy : Actor {
 	}
 
 
-	const float REACTION_TIME = 0.5f;
+	const float REACTION_TIME = 0.3f;
 	IEnumerator navigationCoroutine() {
 		float timeToRecalculateDirection = 0;
 		int x = 0;
@@ -229,7 +248,8 @@ public class Enemy : Actor {
 							y = toDest.y > 0 ? 1 : -1;
 						}
 						// Check if he can move in the preferred direction
-						if (Physics.SphereCast(new Ray(transform.position, new Vector3(x, y, 0)), radius - 0.05f, 0.25f, ~(1 << Layers.ENEMY | 1 << Layers.PLAYER))) {
+						RaycastHit2D hitInfo = Physics2D.CircleCast(transform.position, radius - 0.05f, new Vector2(x, y), 0.25f, ~(1 << Layers.ENEMY | 1 << Layers.PLAYER));
+						if (hitInfo.collider != null) {
 							// Can't move the preferred direction, try the secondary direction
 							usingPrimaryDirection = false;
 							if (x != 0) {
@@ -282,8 +302,8 @@ public class Enemy : Actor {
 		if (Vector3.Angle(getForward(), toPlayer) < FIELD_OF_VIEW_ANGLE) {
 			if (toPlayer.sqrMagnitude < spotDistanceSqr) {
 				float manhattanDistanceToPlayer = Mathf.Abs(toPlayer.x) + Mathf.Abs(toPlayer.y) + Mathf.Abs(toPlayer.z);
-				RaycastHit hitInfo;
-				if (Physics.Raycast(transform.position, toPlayer, out hitInfo, manhattanDistanceToPlayer, ~(1 << Layers.ENEMY))) {
+				RaycastHit2D hitInfo = Physics2D.Raycast(transform.position, toPlayer, manhattanDistanceToPlayer, ~(1 << Layers.ENEMY));
+				if (hitInfo.collider != null) {
 					if (hitInfo.collider.gameObject.layer == Layers.PLAYER) {
 						return true;
 					}
@@ -297,8 +317,8 @@ public class Enemy : Actor {
 		Vector3 toPlayer = Player.instance.transform.position - transform.position;
 		if (toPlayer.sqrMagnitude < trackDistanceSqr) {
 			float manhattanDistanceToPlayer = Mathf.Abs(toPlayer.x) + Mathf.Abs(toPlayer.y) + Mathf.Abs(toPlayer.z);
-			RaycastHit hitInfo;
-			if (Physics.Raycast(transform.position, toPlayer, out hitInfo, manhattanDistanceToPlayer, ~(1 << Layers.ENEMY))) {
+			RaycastHit2D hitInfo= Physics2D.Raycast(transform.position, toPlayer, manhattanDistanceToPlayer, ~(1 << Layers.ENEMY));
+			if (hitInfo.collider != null) {
 				if (hitInfo.collider.gameObject.layer == Layers.PLAYER) {
 					return true;
 				}

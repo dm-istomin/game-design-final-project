@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : Actor {
 
@@ -14,6 +15,8 @@ public class Player : Actor {
 
 	const float TOP_SPEED_SQR = TOP_SPEED * TOP_SPEED;
 
+
+	public Image weaponUI;
 
 	new void Awake() {
 		base.Awake();
@@ -77,6 +80,8 @@ public class Player : Actor {
 					}
 					weapon = hitInfo.collider.GetComponentInParent<Weapon>();
 					weapon.gameObject.SetActive(false);
+					weaponUI.enabled = true;
+					weaponUI.sprite = weapon.GetComponent<SpriteRenderer>().sprite;
 				}
 			}
 		}
