@@ -11,6 +11,17 @@ public class WorldGrid : MonoBehaviour {
 	List<Room> generatedRooms = new List<Room>();
 	List<RoomConnector> availableSpaces = new List<RoomConnector>();
 
+	bool CheckOverlapWithOtherRooms(Room room) {
+		foreach (Room placedRoom in generatedRooms) {
+			bool isOverlapping = CheckOverlap(room, placedRoom);
+
+			if (isOverlapping) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	void GenerateRandomRoom() {
 		RoomConnector space = availableSpaces[Random.Range(0, availableSpaces.Count)];
 
@@ -27,15 +38,16 @@ public class WorldGrid : MonoBehaviour {
 			bool roomPlaced = TryAligning(space, room);
 
 			if (roomPlaced == true) {
-				//Debug.Log("TryAligning() worked!");
-				isAligned = true;
-				room.transform.position = new Vector3(
-					Mathf.Round(room.transform.position.x),
-					Mathf.Round(room.transform.position.y),
-					Mathf.Round(room.transform.position.z)
-				);
-				entrance = conn;
-				generatedRooms.Add(room);
+				if (!CheckOverlapWithOtherRooms(room)) {
+					isAligned = true;
+					room.transform.position = new Vector3(
+						Mathf.Round(room.transform.position.x),
+						Mathf.Round(room.transform.position.y),
+						Mathf.Round(room.transform.position.z)
+					);
+					entrance = conn;
+					generatedRooms.Add(room);
+				}
 				break;
 			} else {
 				//Debug.Log("TryAligning() failed!");
@@ -160,7 +172,7 @@ public class WorldGrid : MonoBehaviour {
 		}
 
 		while (generatedRooms.Count < numRoomsToGenerate) {
-			RemoveDuplicateRooms();
+			//RemoveDuplicateRooms();
 			GenerateRandomRoom();
 		}
 	}
