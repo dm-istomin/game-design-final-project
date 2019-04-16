@@ -1,3 +1,4 @@
+using System;
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,15 +6,17 @@ using UnityEngine.Tilemaps;
 
 public class WorldGrid : MonoBehaviour {
 	public List<Room> mainRoomPrefabs;
-	public List<Room> corridorPrefabs;
+	public Room xAxisCorridor;
+	public Room yAxisCorridor;
 	public int numRoomsToGenerate = 10;
+	public int maxIterations = 10000;
 
 	List<Room> generatedRooms = new List<Room>();
 	List<RoomConnector> availableSpaces = new List<RoomConnector>();
 
-	bool CheckOverlapWithOtherRooms(Room room) {
+	bool IsOverlappingWithOtherRooms(Room room) {
 		foreach (Room placedRoom in generatedRooms) {
-			bool isOverlapping = CheckOverlap(room, placedRoom);
+			bool isOverlapping = IsRoomOverlapping(room, placedRoom);
 
 			if (isOverlapping) {
 				return true;
@@ -22,23 +25,55 @@ public class WorldGrid : MonoBehaviour {
 		return false;
 	}
 
-	void GenerateRandomRoom() {
-		RoomConnector space = availableSpaces[Random.Range(0, availableSpaces.Count)];
+	bool IsDoorPairAligned(RoomConnector door1, RoomConnector door2) {
+		if (door1.transform.position.x == door2.transform.position.x) {
+			if (Mathf.Abs(door1.transform.position.y - door2.transform.position.y) == 2f) {
+				return true;
+			}
+		}
+		if (door1.transform.position.y == door2.transform.position.y) {
+			if (Mathf.Abs(door1.transform.position.x - door2.transform.position.x) == 2f) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-		Room room = Instantiate(mainRoomPrefabs[Random.Range(0, mainRoomPrefabs.Count)]);
+	bool AreDoorsAligned(Room room1, Room room2) {
+		foreach (RoomConnector exit1 in room1.exits) {
+			foreach (RoomConnector exit2 in room2.exits) {
+				if (IsDoorPairAligned(exit1, exit2)) { return true; }
+			}
+		}
+		return false;
+	}
+
+	void GenerateRandomRoom() {
+		RoomConnector space = availableSpaces[UnityEngine.Random.Range(0, availableSpaces.Count)];
+
+		Room room = Instantiate(mainRoomPrefabs[UnityEngine.Random.Range(0, mainRoomPrefabs.Count)]);
 		room.transform.SetParent(transform);
 
 		bool isAligned = false;
 		RoomConnector entrance = null;
 
-		foreach(RoomConnector conn in room.exits) {
-			room.transform.position = new Vector3(space.transform.position.x, space.transform.position.y, 0f);
-			room.transform.position += conn.transform.localPosition;
+		List<RoomConnector> shuffledExits = new List<RoomConnector>();
+		System.Random rand = new System.Random();
+
+		for (int i = 0; i < room.exits.Count; i++) {
+			shuffledExits.Add(room.exits[rand.Next(0, room.exits.Count)]);
+		}
+
+		foreach(RoomConnector conn in shuffledExits) {
+			room.transform.position = new Vector3(
+				space.transform.position.x,
+				space.transform.position.y,
+				0f
+			);
 
 			bool roomPlaced = TryAligning(space, room);
 
 			if (roomPlaced == true) {
-				if (!CheckOverlapWithOtherRooms(room)) {
 					isAligned = true;
 					room.transform.position = new Vector3(
 						Mathf.Round(room.transform.position.x),
@@ -47,10 +82,7 @@ public class WorldGrid : MonoBehaviour {
 					);
 					entrance = conn;
 					generatedRooms.Add(room);
-				}
-				break;
-			} else {
-				//Debug.Log("TryAligning() failed!");
+					break;
 			}
 		}
 
@@ -63,16 +95,7 @@ public class WorldGrid : MonoBehaviour {
 		}
 	}
 
-	bool CheckOverlap(Room a, Room b) {
-		/*
-		Debug.Log("a: " + a.transform.position);
-		Debug.Log("a.floor.cellBounds.xMax: " + (a.transform.position.x + a.floor.cellBounds.xMax));
-		Debug.Log("a.floor.cellBounds.xMin: " + (a.transform.position.x + a.floor.cellBounds.xMin));
-		Debug.Log("b.floor.cellBounds.xMax: " + (b.transform.position.x + a.floor.cellBounds.xMax));
-		Debug.Log("b.floor.cellBounds.xMin: " + (b.transform.position.x + a.floor.cellBounds.xMin));
-		Debug.Log("b: " + b.transform.position);
-		*/
-
+	bool IsRoomOverlapping(Room a, Room b) {
 		float xMaxA = a.transform.position.x + a.floor.cellBounds.xMax;
 		float xMinA = a.transform.position.x + a.floor.cellBounds.xMin;
 		float yMaxA = a.transform.position.y + a.floor.cellBounds.yMax;
@@ -83,13 +106,11 @@ public class WorldGrid : MonoBehaviour {
 		float yMaxB = b.transform.position.y + b.floor.cellBounds.yMax;
 		float yMinB = b.transform.position.y + b.floor.cellBounds.yMin;
 
-		if (xMinA >= xMaxB || xMinB >= xMaxA) {
-			//Debug.Log("xMinA > xMaxB || xMinB > xMaxA: " + xMinA + " > " + xMaxB + " || " + xMinB + " > " + xMaxA);
+		if (xMinA > xMaxB || xMinB > xMaxA) {
 			return false;
 		}
 
-		if (yMinA >= yMaxB || yMinB >= yMaxA) {
-			//Debug.Log("yMinA > yMaxB || yMinB > yMaxA: " + yMinA + " > " + yMaxB + " || " + yMinB + " > " + yMaxA);
+		if (yMinA > yMaxB || yMinB > yMaxA) {
 			return false;
 		}
 
@@ -105,64 +126,43 @@ public class WorldGrid : MonoBehaviour {
 
 		Room prevRoom = emptySpace.transform.parent.gameObject.GetComponent<Room>();
 
-		newRoom.transform.position = originalPosition + new Vector3(1f, 0, 0);
+		for (float x = 0f; x <= 20f; x += 0.5f) {
+			for (float y = 0f; y <= 20f; y += 0.5f) {
 
-		if (!CheckOverlap(newRoom, prevRoom)) {
-			//Debug.Log("+1 x");
-			return true;
-		}
+				newRoom.transform.position = originalPosition + new Vector3(x, y, 0);
 
-		newRoom.transform.position = originalPosition + new Vector3(-1f, 0, 0);
-
-		if (!CheckOverlap(newRoom, prevRoom)) {
-			//Debug.Log("-1 x");
-			return true;
-		}
-
-		newRoom.transform.position = originalPosition + new Vector3(0, 1f, 0);
-
-		if (!CheckOverlap(newRoom, prevRoom)) {
-			// Debug.Log("+1 y");
-			return true;
-		}
-
-		newRoom.transform.position = originalPosition + new Vector3(0, -1f, 0);
-
-		if (!CheckOverlap(newRoom, prevRoom)) {
-			// Debug.Log("-1 y");
-			return true;
-		}
-
-		newRoom.transform.position = originalPosition;
-		return false;
-	}
-
-	void RemoveDuplicateRooms() {
-		Room duplicateRoom = null;
-		Debug.Log("before delete: " + generatedRooms.Count);
-
-		for (int i = 0; i < generatedRooms.Count; i++) {
-			for (int j = 0; j < generatedRooms.Count; j++) {
-				if (i != j) {
-					if (generatedRooms[i].transform.position == generatedRooms[j].transform.position) {
-						duplicateRoom = generatedRooms[i];
+				if (AreDoorsAligned(newRoom, prevRoom)) {
+					if (!IsOverlappingWithOtherRooms(newRoom)) {
+						return true;
 					}
+				}
+
+				newRoom.transform.position = originalPosition + new Vector3(-x, y, 0);
+
+				if (AreDoorsAligned(newRoom, prevRoom)) {
+					if (!IsOverlappingWithOtherRooms(newRoom)) { return true; }
+				}
+
+				newRoom.transform.position = originalPosition + new Vector3(x, -y, 0);
+
+				if (AreDoorsAligned(newRoom, prevRoom)) {
+					if (!IsOverlappingWithOtherRooms(newRoom)) { return true; }
+				}
+				newRoom.transform.position = originalPosition + new Vector3(-x, -y, 0);
+
+				if (AreDoorsAligned(newRoom, prevRoom)) {
+					if (!IsOverlappingWithOtherRooms(newRoom)) { return true; }
 				}
 			}
 		}
 
-		if (duplicateRoom != null) {
-			foreach (RoomConnector conn in duplicateRoom.exits) {
-				availableSpaces.Remove(conn);
-				Destroy(conn.gameObject);
-			}
-			generatedRooms.Remove(duplicateRoom);
-			Destroy(duplicateRoom.gameObject);
-		}
-		Debug.Log("after delete: " + generatedRooms.Count);
+		return false;
 	}
 
 	void Start() {
+		int numIterations = 0;
+
+		Debug.Log("Generating initial room...");
 		Room startingRoom = Instantiate(mainRoomPrefabs[0]);
 		startingRoom.transform.SetParent(transform);
 		generatedRooms.Add(startingRoom);
@@ -171,9 +171,64 @@ public class WorldGrid : MonoBehaviour {
 			availableSpaces.Add(conn);
 		}
 
-		while (generatedRooms.Count < numRoomsToGenerate) {
-			//RemoveDuplicateRooms();
+		Debug.Log("Populating rooms...");
+		while (generatedRooms.Count < numRoomsToGenerate && numIterations < maxIterations) {
+			Debug.Log("Generating random room, iteration #" + numIterations);
 			GenerateRandomRoom();
+			numIterations++;
+		}
+
+	Debug.Log("Toggling doors between rooms and adding corridors...");
+		// Hide walls for doors
+		for (int i = 0; i < generatedRooms.Count; i++) {
+			for (int j = 0; j < generatedRooms.Count; j++) {
+				if (i != j) {
+					Room room1 = generatedRooms[i];
+					Room room2 = generatedRooms[j];
+
+					foreach (RoomConnector r1 in room1.exits) {
+						foreach (RoomConnector r2 in room2.exits) {
+							if (IsDoorPairAligned(r1, r2) && (r1.gameObject.active || r2.gameObject.active)) {
+								r1.gameObject.SetActive(false);
+								r2.gameObject.SetActive(false);
+
+								Vector3 midpoint = (r1.transform.position + r2.transform.position) / 2f;
+
+								float angleToX = Vector3.Angle(r1.transform.position - r2.transform.position, Vector3.right);
+								float angleToY = Vector3.Angle(r1.transform.position - r2.transform.position, Vector3.up);
+
+								if (angleToX == 180 || angleToX == 0) {
+									Vector3 position = midpoint - new Vector3(
+										0.5f,
+										UnityEngine.Random.Range(0, 2) == 1 ? -0.5f : 0.5f,
+										0f
+									);
+									Room xCorridor = Instantiate(
+										xAxisCorridor,
+										position,
+										Quaternion.identity
+									);
+									xCorridor.transform.SetParent(transform);
+								}
+
+								if (angleToY == 180 || angleToY == 0) {
+									Vector3 position = midpoint - new Vector3(
+										UnityEngine.Random.Range(0, 2) == 1 ? -0.5f : 0.5f,
+										0.5f,
+										0f
+									);
+									Room yCorridor = Instantiate(
+										yAxisCorridor,
+										position,
+										Quaternion.identity
+									);
+									yCorridor.transform.SetParent(transform);
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 }
