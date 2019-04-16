@@ -189,7 +189,7 @@ GameObject:
   - component: {fileID: 422246735}
   - component: {fileID: 422246737}
   m_Layer: 0
-  m_Name: WorldGrid
+  m_Name: DungeonGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -238,7 +238,7 @@ MonoBehaviour:
     type: 2}
   yAxisCorridor: {fileID: 114537937185065612, guid: f5dd134a516d84db2af0555b94919b8b,
     type: 2}
-  numRoomsToGenerate: 20
+  numRoomsToGenerate: 10
   maxIterations: 200
 --- !u!1 &624903061
 GameObject:
