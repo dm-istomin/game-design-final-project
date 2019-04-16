@@ -231,11 +231,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainRoomPrefabs:
-  - {fileID: 114179534902522008, guid: 86741cd9f3b834c1696be68c4b17fc9f, type: 2}
-  - {fileID: 114179534902522008, guid: c279410a2b4944cb18372179cf8b2359, type: 2}
-  - {fileID: 114351322579428538, guid: 7929fabd7f81e42629b6b2757939acaf, type: 2}
-  corridorPrefabs: []
-  numRoomsToGenerate: 10
+  - {fileID: 114530140643992674, guid: 6fad42a5a298b43e9a619f4fe2c73d48, type: 2}
+  - {fileID: 114665842069603610, guid: ebd9bdf75bd1344d9b5e34b8d73ce980, type: 2}
+  - {fileID: 114386607529430762, guid: 1e074a71287994dcb99c690b4333db45, type: 2}
+  xAxisCorridor: {fileID: 114691233243024992, guid: bb6c140bdf5f945cf8609328cb6ab927,
+    type: 2}
+  yAxisCorridor: {fileID: 114537937185065612, guid: f5dd134a516d84db2af0555b94919b8b,
+    type: 2}
+  numRoomsToGenerate: 20
+  maxIterations: 200
 --- !u!1 &624903061
 GameObject:
   m_ObjectHideFlags: 0
