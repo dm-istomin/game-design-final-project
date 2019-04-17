@@ -189,7 +189,7 @@ GameObject:
   - component: {fileID: 422246735}
   - component: {fileID: 422246737}
   m_Layer: 0
-  m_Name: WorldGrid
+  m_Name: DungeonGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -234,11 +234,12 @@ MonoBehaviour:
   - {fileID: 114530140643992674, guid: 6fad42a5a298b43e9a619f4fe2c73d48, type: 2}
   - {fileID: 114665842069603610, guid: ebd9bdf75bd1344d9b5e34b8d73ce980, type: 2}
   - {fileID: 114386607529430762, guid: 1e074a71287994dcb99c690b4333db45, type: 2}
+  - {fileID: 114132345596509276, guid: 0c724c30e989d4fedaff957d50bf235f, type: 2}
   xAxisCorridor: {fileID: 114691233243024992, guid: bb6c140bdf5f945cf8609328cb6ab927,
     type: 2}
   yAxisCorridor: {fileID: 114537937185065612, guid: f5dd134a516d84db2af0555b94919b8b,
     type: 2}
-  numRoomsToGenerate: 20
+  numRoomsToGenerate: 10
   maxIterations: 200
 --- !u!1 &624903061
 GameObject:
@@ -282,7 +283,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.098039225, g: 0.09019608, b: 0.08627451, a: 0}
+  m_BackGroundColor: {r: 0.33823532, g: 0.31999713, b: 0.31087804, a: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -330,10 +331,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 624903061}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61b77db19bd3d45228efd47ce0b38eb7, type: 3}
+  m_Script: {fileID: 11500000, guid: a6f62c6224dc0453f8d19603f076da91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
 --- !u!1 &681074466
 GameObject:
   m_ObjectHideFlags: 0
@@ -360,9 +360,57 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 422246736}
+  - {fileID: 2099352809}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &877366430
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 681074467}
+    m_Modifications:
+    - target: {fileID: 4482899615644482, guid: 1fab1c0f39d524aeba1621684d8cf97d, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4482899615644482, guid: 1fab1c0f39d524aeba1621684d8cf97d, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4482899615644482, guid: 1fab1c0f39d524aeba1621684d8cf97d, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4482899615644482, guid: 1fab1c0f39d524aeba1621684d8cf97d, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4482899615644482, guid: 1fab1c0f39d524aeba1621684d8cf97d, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4482899615644482, guid: 1fab1c0f39d524aeba1621684d8cf97d, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4482899615644482, guid: 1fab1c0f39d524aeba1621684d8cf97d, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4482899615644482, guid: 1fab1c0f39d524aeba1621684d8cf97d, type: 2}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 212026972778077978, guid: 1fab1c0f39d524aeba1621684d8cf97d,
+        type: 2}
+      propertyPath: m_SortingOrder
+      value: 10
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 1fab1c0f39d524aeba1621684d8cf97d, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &1090685151
 GameObject:
   m_ObjectHideFlags: 0
@@ -477,3 +525,8 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &2099352809 stripped
+Transform:
+  m_PrefabParentObject: {fileID: 4482899615644482, guid: 1fab1c0f39d524aeba1621684d8cf97d,
+    type: 2}
+  m_PrefabInternal: {fileID: 877366430}
