@@ -12,8 +12,6 @@ public class Enemy : Actor {
 	const float ALLOWABLE_DESTINATION_ERROR_SQR = ALLOWABLE_DESTINATION_ERROR * ALLOWABLE_DESTINATION_ERROR;
 	const float ALERT_PAUSE_DURATION = 0.5f;
 
-	[SerializeField] int gold = 1;
-
 	[SerializeField] float spotDistance = 5f;
 	[SerializeField] float trackDistance = 8f;
 	[SerializeField] float waitIntervalLow = 0f;
@@ -217,7 +215,6 @@ public class Enemy : Actor {
 		}
 
 		if (hp <= 0) {
-			Player.instance.gold += gold;
 			Destroy(gameObject);
 			return;
 		}

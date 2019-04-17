@@ -19,16 +19,16 @@ public class Player : Actor {
 
 	public Image weaponUI;
 
-	public int gold {
+	public int keys {
 		get {
-			return _gold;
+			return _keys;
 		}
 		set {
-			_gold = value;
-			PlayerGUI.updateGoldDisplay();
+			_keys = value;
+			PlayerGUI.updateKeysDisplay();
 		}
 	}
-	int _gold;
+	int _keys;
 
 	new void Awake() {
 		base.Awake();
@@ -91,14 +91,22 @@ public class Player : Actor {
 			RaycastHit2D hitInfo = Physics2D.CircleCast(transform.position, radius - 0.05f, getForward(), 0.2f, ~(1 << Layers.PLAYER));
 			if (hitInfo.collider != null) {
 				if (hitInfo.collider.gameObject.layer == Layers.WEAPON) {
-					if (weapon != null) {
-						weapon.gameObject.SetActive(true);
-						weapon.transform.position = transform.position + (getForward() * (radius + weapon.radius));
+					if (hitInfo.collider.GetComponentInParent<Weapon>() != null) {
+						// Picked up weapon
+						if (weapon != null) {
+							weapon.gameObject.SetActive(true);
+							weapon.transform.position = transform.position + (getForward() * (radius + weapon.radius));
+						}
+						weapon = hitInfo.collider.GetComponentInParent<Weapon>();
+						weapon.gameObject.SetActive(false);
+						weaponUI.enabled = true;
+						weaponUI.sprite = weapon.GetComponent<SpriteRenderer>().sprite;
 					}
-					weapon = hitInfo.collider.GetComponentInParent<Weapon>();
-					weapon.gameObject.SetActive(false);
-					weaponUI.enabled = true;
-					weaponUI.sprite = weapon.GetComponent<SpriteRenderer>().sprite;
+					else {
+						// Picked up key
+						keys += 1;
+						Destroy(hitInfo.collider.gameObject);
+					}
 				}
 			}
 		}
