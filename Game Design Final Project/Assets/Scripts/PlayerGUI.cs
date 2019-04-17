@@ -18,12 +18,12 @@ public class PlayerGUI : MonoBehaviour {
 	}
 
 	void Start() {
-		updateGoldDisplay();
+		updateKeysDisplay();
 		updateHealthDisplay();
 	}
 	
-	public static void updateGoldDisplay() {
-		instance.goldLabel.text = "x" + Player.instance.gold.ToString();
+	public static void updateKeysDisplay() {
+		instance.goldLabel.text = "x" + Player.instance.keys.ToString();
 	}
 
 	public static void updateHealthDisplay() {
