@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Actor : MonoBehaviour {
+public abstract class Actor : MonoBehaviour {
 
 	protected new Rigidbody2D rigidbody;
 	protected Animator animator;
@@ -31,7 +31,7 @@ public class Actor : MonoBehaviour {
 	}
 	int _facing;
 
-	protected int hp = 3;
+	public int hp = 3;
 	protected bool hasControl = true;
 
 	protected float radius = 0.5f;
@@ -68,12 +68,7 @@ public class Actor : MonoBehaviour {
 		}
 	}
 
-	public virtual void takeDamage(int damage) {
-		hp -= damage;
-		animator.SetInteger("HP", hp);
-		animator.SetTrigger("Flinch");
-		hasControl = false;
-	}
+	public abstract void takeDamage(int damage);
 
 	protected void attack() {
 		animator.SetTrigger("Attacking");
@@ -92,9 +87,26 @@ public class Actor : MonoBehaviour {
 
 	// Gets called via the Player Attack animation
 	public void applyAttackDamage() {
-		RaycastHit2D[] hitInfos = Physics2D.CircleCastAll(transform.position, radius, getForward(), weapon.range, 1 << Layers.ENEMY);
-		foreach (RaycastHit2D hit in hitInfos) {
-			hit.collider.gameObject.GetComponent<Enemy>().takeDamage(weapon.damage);
+		if (gameObject.layer == Layers.PLAYER) {
+			// Check for NPC interaction first
+			RaycastHit2D[] hitInfos = Physics2D.CircleCastAll(transform.position, radius, getForward(), 0.5f, 1 << Layers.NPC);
+			foreach (RaycastHit2D hit in hitInfos) {
+				hit.collider.gameObject.GetComponent<NPC>().takeDamage(0);
+				return;
+			}
+			// Check for Enemy damage
+			if (weapon != null) {
+				hitInfos = Physics2D.CircleCastAll(transform.position, radius, getForward(), weapon.range, 1 << Layers.ENEMY);
+				foreach (RaycastHit2D hit in hitInfos) {
+					hit.collider.gameObject.GetComponent<Enemy>().takeDamage(weapon.damage);
+				}
+			}
+		}
+		else {
+			RaycastHit2D hitInfo = Physics2D.CircleCast(transform.position, radius, getForward(), weapon.range, 1 << Layers.PLAYER);
+			if (hitInfo.collider != null) {
+				hitInfo.collider.gameObject.GetComponent<Player>().takeDamage(weapon.damage);
+			}
 		}
 	}
 

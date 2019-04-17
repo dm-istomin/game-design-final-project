@@ -2,21 +2,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Player : Actor {
 
 	public static Player instance;
 
+	public const int MAX_HP = 3;
+
 	const float TOP_SPEED = 5f;
-	const float ACCELERATION = 10f;
-	const float DECELERATION = 20f;
-	const float ROTATION_SPEED = 360f;
-	const float ATTACK_RANGE = 0.5f;
-
-	const float TOP_SPEED_SQR = TOP_SPEED * TOP_SPEED;
-
+//	const float ACCELERATION = 10f;
+//	const float DECELERATION = 20f;
+//	const float ROTATION_SPEED = 360f;
+//	const float ATTACK_RANGE = 0.5f;
+//	const float TOP_SPEED_SQR = TOP_SPEED * TOP_SPEED;
 
 	public Image weaponUI;
+
+	public int gold {
+		get {
+			return _gold;
+		}
+		set {
+			_gold = value;
+			PlayerGUI.updateGoldDisplay();
+		}
+	}
+	int _gold;
 
 	new void Awake() {
 		base.Awake();
@@ -24,9 +36,16 @@ public class Player : Actor {
 		if (gameObject.layer != Layers.PLAYER) {
 			Debug.LogWarning("The player is not set to the Player layer");
 		}
+		hp = MAX_HP;
 	}
 	
 	new void Update() {
+		if (Dialog.shown) {
+			if (Input.GetButtonDown("Attack")) {
+				Dialog.close();
+			}
+			return;
+		}
 		if (hasControl) {
 			movementControls();
 			actionControls();
@@ -66,9 +85,7 @@ public class Player : Actor {
 
 	void actionControls() {
 		if (Input.GetButtonDown("Attack")) {
-			if (weapon != null) {
-				attack();
-			}
+			attack();
 		}
 		else if (Input.GetButtonDown("Pickup")) {
 			RaycastHit2D hitInfo = Physics2D.CircleCast(transform.position, radius - 0.05f, getForward(), 0.2f, ~(1 << Layers.PLAYER));
@@ -84,6 +101,19 @@ public class Player : Actor {
 					weaponUI.sprite = weapon.GetComponent<SpriteRenderer>().sprite;
 				}
 			}
+		}
+	}
+
+	public override void takeDamage(int damage) {
+		hp -= damage;
+		if (hp <= 0) {
+			SceneManager.LoadScene("Game Over");
+		}
+		else {
+			animator.SetInteger("HP", hp);
+			animator.SetTrigger("Flinch");
+			hasControl = false;
+			PlayerGUI.updateHealthDisplay();
 		}
 	}
 
