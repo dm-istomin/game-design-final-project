@@ -34,7 +34,8 @@ public abstract class Actor : MonoBehaviour {
 	public int hp = 3;
 	protected bool hasControl = true;
 
-	protected float radius = 0.5f;
+	[HideInInspector] public bool hidden = false;
+	[HideInInspector] public float radius;
 
 	public AnimatorOverrideController controllerUp;
 	public AnimatorOverrideController controllerRight;
@@ -46,14 +47,14 @@ public abstract class Actor : MonoBehaviour {
 		animator = GetComponent<Animator>();
 		spriteRenderer = GetComponent<SpriteRenderer>();
 		facing = Facing.Down;
-//		radius = GetComponentInChildren<Collider>().transform.lossyScale.x / 2f;
+		radius = GetComponent<CircleCollider2D>().radius * transform.lossyScale.x;
 	}
 
 	protected void Update() {
 		spriteRenderer.flipX = (facing == Facing.Left);
 	}
 
-	protected Vector3 getForward() {
+	public Vector3 getForward() {
 		if (facing == Facing.Up) {
 			return transform.up;
 		}
@@ -70,7 +71,9 @@ public abstract class Actor : MonoBehaviour {
 
 	public abstract void takeDamage(int damage);
 
+	bool triggeredAttackDamage;
 	protected void attack() {
+		triggeredAttackDamage = false;
 		animator.SetTrigger("Attacking");
 		hasControl = false;
 	}
@@ -87,6 +90,10 @@ public abstract class Actor : MonoBehaviour {
 
 	// Gets called via the Player Attack animation
 	public void applyAttackDamage() {
+		if (triggeredAttackDamage) {
+			return;
+		}
+		triggeredAttackDamage = true;
 		if (gameObject.layer == Layers.PLAYER) {
 			// Check for NPC interaction first
 			RaycastHit2D[] hitInfos = Physics2D.CircleCastAll(transform.position, radius, getForward(), 0.5f, 1 << Layers.NPC);
@@ -96,18 +103,30 @@ public abstract class Actor : MonoBehaviour {
 			}
 			// Check for Enemy damage
 			if (weapon != null) {
-				hitInfos = Physics2D.CircleCastAll(transform.position, radius, getForward(), weapon.range, 1 << Layers.ENEMY);
-				foreach (RaycastHit2D hit in hitInfos) {
-					hit.collider.gameObject.GetComponent<Enemy>().takeDamage(weapon.damage);
-				}
+				weapon.use(this, Layers.ENEMY);
+//				hitInfos = Physics2D.CircleCastAll(transform.position, radius, getForward(), weapon.range, 1 << Layers.ENEMY);
+//				foreach (RaycastHit2D hit in hitInfos) {
+//					hit.collider.gameObject.GetComponent<Enemy>().takeDamage(weapon.damage);
+//				}
 			}
 		}
 		else {
-			RaycastHit2D hitInfo = Physics2D.CircleCast(transform.position, radius, getForward(), weapon.range, 1 << Layers.PLAYER);
-			if (hitInfo.collider != null) {
-				hitInfo.collider.gameObject.GetComponent<Player>().takeDamage(weapon.damage);
-			}
+			weapon.use(this, Layers.PLAYER);
+//			RaycastHit2D hitInfo = Physics2D.CircleCast(transform.position, radius, getForward(), weapon.range, 1 << Layers.PLAYER);
+//			if (hitInfo.collider != null) {
+//				hitInfo.collider.gameObject.GetComponent<Player>().takeDamage(weapon.damage);
+//			}
 		}
+	}
+
+	public void hide() {
+		hidden = true;
+		spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 0.5f);
+	}
+
+	public void unhide() {
+		hidden = false;
+		spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 1f);
 	}
 
 }
