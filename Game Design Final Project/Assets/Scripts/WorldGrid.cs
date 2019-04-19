@@ -5,11 +5,14 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class WorldGrid : MonoBehaviour {
+	public bool enabled = true;
 	public List<Room> mainRoomPrefabs;
-	public Room xAxisCorridor;
-	public Room yAxisCorridor;
+	public Room startingRoomPrefab;
+	public Room endRoomPrefab;
+	public Room xAxisCorridorPrefab;
+	public Room yAxisCorridorPrefab;
 	public int numRoomsToGenerate = 10;
-	public int maxIterations = 10000;
+	public int maxIterations = 50;
 
 	List<Room> generatedRooms = new List<Room>();
 	List<RoomConnector> availableSpaces = new List<RoomConnector>();
@@ -48,7 +51,63 @@ public class WorldGrid : MonoBehaviour {
 		return false;
 	}
 
+	void GenerateRoom(Room room, bool required) {
+		RoomConnector space = availableSpaces[UnityEngine.Random.Range(0, availableSpaces.Count)];
+
+		room.transform.SetParent(transform);
+
+		bool isAligned = false;
+		RoomConnector entrance = null;
+
+		List<RoomConnector> shuffledExits = new List<RoomConnector>();
+		System.Random rand = new System.Random();
+
+		for (int i = 0; i < room.exits.Count; i++) {
+			shuffledExits.Add(room.exits[rand.Next(0, room.exits.Count)]);
+		}
+
+		foreach(RoomConnector conn in shuffledExits) {
+			room.transform.position = new Vector3(
+				space.transform.position.x,
+				space.transform.position.y,
+				0f
+			);
+
+			bool roomPlaced = TryAligning(space, room);
+
+			if (roomPlaced == true) {
+					isAligned = true;
+					room.transform.position = new Vector3(
+						Mathf.Round(room.transform.position.x),
+						Mathf.Round(room.transform.position.y),
+						Mathf.Round(room.transform.position.z)
+					);
+					entrance = conn;
+					generatedRooms.Add(room);
+					break;
+			}
+		}
+
+		if (isAligned) {
+			foreach (RoomConnector conn in room.exits) { availableSpaces.Add(conn); }
+			availableSpaces.Remove(space);
+			availableSpaces.Remove(entrance);
+		} else {
+			if (!required) {
+				Destroy(room.gameObject);
+			} else {
+				Debug.Log("Could not place required room, trying again!");
+				GenerateRoom(room, required);
+			}
+		}
+
+	}
+
 	void GenerateRandomRoom() {
+		Room room = Instantiate(mainRoomPrefabs[UnityEngine.Random.Range(0, mainRoomPrefabs.Count)]);
+		GenerateRoom(room, false);
+
+		/*
 		RoomConnector space = availableSpaces[UnityEngine.Random.Range(0, availableSpaces.Count)];
 
 		Room room = Instantiate(mainRoomPrefabs[UnityEngine.Random.Range(0, mainRoomPrefabs.Count)]);
@@ -93,6 +152,7 @@ public class WorldGrid : MonoBehaviour {
 		} else {
 			Destroy(room.gameObject);
 		}
+		*/
 	}
 
 	bool IsRoomOverlapping(Room a, Room b) {
@@ -160,10 +220,13 @@ public class WorldGrid : MonoBehaviour {
 	}
 
 	void Start() {
+		if (!enabled) {
+			return;
+		}
 		int numIterations = 0;
 
 		Debug.Log("Generating initial room...");
-		Room startingRoom = Instantiate(mainRoomPrefabs[0]);
+		Room startingRoom = Instantiate(startingRoomPrefab);
 		startingRoom.transform.SetParent(transform);
 		generatedRooms.Add(startingRoom);
 
@@ -178,7 +241,12 @@ public class WorldGrid : MonoBehaviour {
 			numIterations++;
 		}
 
-	Debug.Log("Toggling doors between rooms and adding corridors...");
+		Debug.Log("Adding end room...");
+		Room endRoom = Instantiate(endRoomPrefab);
+		GenerateRoom(endRoom, true);
+
+
+		Debug.Log("Toggling doors between rooms and adding corridors...");
 		// Hide walls for doors
 		for (int i = 0; i < generatedRooms.Count; i++) {
 			for (int j = 0; j < generatedRooms.Count; j++) {
@@ -204,7 +272,7 @@ public class WorldGrid : MonoBehaviour {
 										0f
 									);
 									Room xCorridor = Instantiate(
-										xAxisCorridor,
+										xAxisCorridorPrefab,
 										position,
 										Quaternion.identity
 									);
@@ -218,7 +286,7 @@ public class WorldGrid : MonoBehaviour {
 										0f
 									);
 									Room yCorridor = Instantiate(
-										yAxisCorridor,
+										yAxisCorridorPrefab,
 										position,
 										Quaternion.identity
 									);

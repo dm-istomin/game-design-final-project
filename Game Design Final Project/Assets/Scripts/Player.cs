@@ -40,7 +40,7 @@ public class Player : Actor {
 		hp = MAX_HP;
 		updateAmmo();
 	}
-	
+
 	new void Update() {
 		if (Dialog.shown) {
 			if (Input.GetButtonDown("Attack")) {
@@ -159,4 +159,12 @@ public class Player : Actor {
 		}
 	}
 
+	void OnCollisionEnter2D(Collision2D collision) {
+		if (collision.gameObject.tag == "LockedDoor") {
+			if (keys > 0) {
+				keys--;
+				collision.gameObject.SetActive(false);
+			}
+		}
+	}
 }
