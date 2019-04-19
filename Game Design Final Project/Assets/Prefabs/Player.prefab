@@ -20,10 +20,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4482899615644482}
   - component: {fileID: 212026972778077978}
-  - component: {fileID: 114144923416834016}
   - component: {fileID: 58979014127423758}
   - component: {fileID: 50534217924642794}
   - component: {fileID: 95006206730010272}
+  - component: {fileID: 114917171147828842}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -38,6 +38,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1152999375978824}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -94,7 +96,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
---- !u!114 &114144923416834016
+--- !u!114 &114917171147828842
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -113,6 +115,7 @@ MonoBehaviour:
   controllerDown: {fileID: 22100000, guid: 794339972bfea4481b90a10cccbabe96, type: 2}
   weapon: {fileID: 0}
   weaponUI: {fileID: 0}
+  ammoUI: {fileID: 0}
 --- !u!212 &212026972778077978
 SpriteRenderer:
   m_ObjectHideFlags: 1

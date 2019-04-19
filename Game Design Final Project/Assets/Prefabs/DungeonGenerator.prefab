@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1003141606255474}
+  m_IsPrefabParent: 1
+--- !u!1 &1003141606255474
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4145058439735952}
+  - component: {fileID: 2569400268537221260}
+  - component: {fileID: 114142599675601824}
+  m_Layer: 0
+  m_Name: DungeonGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4145058439735952
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1003141606255474}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114142599675601824
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1003141606255474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d90c1b0155d0e45649a07566e31e8715, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enabled: 1
+  mainRoomPrefabs:
+  - {fileID: 114132345596509276, guid: 0c724c30e989d4fedaff957d50bf235f, type: 2}
+  - {fileID: 114665842069603610, guid: ebd9bdf75bd1344d9b5e34b8d73ce980, type: 2}
+  - {fileID: 114386607529430762, guid: 1e074a71287994dcb99c690b4333db45, type: 2}
+  startingRoomPrefab: {fileID: 114530140643992674, guid: 6fad42a5a298b43e9a619f4fe2c73d48,
+    type: 2}
+  endRoomPrefab: {fileID: 114490099449518870, guid: 20d63ce08ae6e46499b1f22a4bfa526f,
+    type: 2}
+  xAxisCorridorPrefab: {fileID: 114691233243024992, guid: bb6c140bdf5f945cf8609328cb6ab927,
+    type: 2}
+  yAxisCorridorPrefab: {fileID: 114537937185065612, guid: f5dd134a516d84db2af0555b94919b8b,
+    type: 2}
+  numRoomsToGenerate: 10
+  maxIterations: 50
+--- !u!156049354 &2569400268537221260
+Grid:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1003141606255474}
+  m_Enabled: 1
+  m_CellSize: {x: 1, y: 1, z: 1}
+  m_CellGap: {x: 0, y: 0, z: 0}
+  m_CellLayout: 0
+  m_CellSwizzle: 0
