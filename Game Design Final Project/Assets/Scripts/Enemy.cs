@@ -44,6 +44,8 @@ public class Enemy : Actor {
 	Vector3 _rawDestination;
 	Vector3 _destination;
 	List<Vector3> path = new List<Vector3>();
+	List<Vector3> patrolDestinations;
+	int nextPatrolDestinationIndex = 0;
 	Vector3 startingPosition;
 
 	float stoppingDistance {
@@ -58,23 +60,36 @@ public class Enemy : Actor {
 	float _stoppingDistance;
 	float stoppingDistanceSqr;
 
+	GameObject exclamationPoint;
+
 	State state {
 		get {
 			return _state;
 		}
 		set {
+			exclamationPoint.SetActive(false);
 			if (value == State.Wait) {
 				waitTimer = Random.Range(waitIntervalLow, waitIntervalHigh);
 			}
 			else if (value == State.Wander) {
 				speed = wanderSpeed;
-				Vector2 rand = Random.insideUnitCircle.normalized * Random.Range(2f, 6f);
-				destination = startingPosition + new Vector3(rand.x, rand.y, 0);
+				if (patrolDestinations.Count == 0) {
+					Vector2 rand = Random.insideUnitCircle.normalized * Random.Range(2f, 6f);
+					destination = startingPosition + new Vector3(rand.x, rand.y, 0);
+				}
+				else {
+					destination = patrolDestinations[nextPatrolDestinationIndex];
+					nextPatrolDestinationIndex += 1;
+					if (nextPatrolDestinationIndex >= patrolDestinations.Count) {
+						nextPatrolDestinationIndex = 0;
+					}
+				}
 			}
 			else if (value == State.Alert) {
 				waitTimer = ALERT_PAUSE_DURATION;
 				speed = chaseSpeed;
 				destination = Player.instance.transform.position;
+				exclamationPoint.SetActive(true);
 			}
 			else if (value == State.Chase) {
 				attackTimer = 0;
@@ -89,6 +104,7 @@ public class Enemy : Actor {
 		if (gameObject.layer != Layers.ENEMY) {
 			Debug.LogWarning("The enemy '" + name + "' is not set to the Enemy layer");
 		}
+		exclamationPoint = transform.Find("Exclamation Point").gameObject;
 		spotDistanceSqr = spotDistance * spotDistance;
 		trackDistanceSqr = trackDistance * trackDistance;
 		state = State.Wait;
@@ -98,6 +114,12 @@ public class Enemy : Actor {
 
 	void Start() {
 		startingPosition = transform.position;
+		patrolDestinations = new List<Vector3>();
+		foreach (Transform t in transform) {
+			if (t.gameObject.layer != Layers.UI) {
+				patrolDestinations.Add(t.position);
+			}
+		}
 	}
 
 	new void Update() {
@@ -187,21 +209,6 @@ public class Enemy : Actor {
 				// Arrived at the last known location of the player and he's still out of sight
 				state = State.Wander;
 			}
-
-//			else {
-//				if (!attackAnimationPlaying && hasClearShot(getEnemyData("Range"))) {
-//					StartCoroutine(attackAnimation(getEnemyData("Damage Interval")));
-//				}
-//				// Setting stopping distance for mummies
-//				if (enemy == Enemy.MUMMY) {
-//					if (agent.remainingDistance < 10f) {
-//						agent.speed = 0.05f;
-//					}
-//					else {
-//						agent.speed = getEnemyData("Hi Speed");
-//					}
-//				}
-//			}
 		}
 	}
 
@@ -238,7 +245,7 @@ public class Enemy : Actor {
 		float timeToRecalculateDirection = 0;
 		int x = 0;
 		int y = 0;
-		bool usingPrimaryDirection = true;
+//		bool usingPrimaryDirection = true;
 		while (true) {
 			if (!hasControl) {
 				yield return null;
@@ -275,7 +282,8 @@ public class Enemy : Actor {
 						float toDestYDist = Mathf.Abs(toDest.y);
 						if (toDestXDist > 0 || toDestYDist > 0) {
 							float horizontalProbability = toDestXDist / (toDestXDist + toDestYDist);
-							if (Random.value < horizontalProbability) {
+							//if (Random.value < horizontalProbability) {
+							if (horizontalProbability > 0.5f) {
 								x = toDest.x > 0 ? 1 : -1;
 							}
 							else {
@@ -285,7 +293,7 @@ public class Enemy : Actor {
 							RaycastHit2D hitInfo = Physics2D.CircleCast(transform.position, radius - 0.05f, new Vector2(x, y), 0.25f, ~(1 << Layers.ENEMY | 1 << Layers.PLAYER | 1 << Layers.NPC));
 							if (hitInfo.collider != null) {
 								// Can't move the preferred direction, try the secondary direction
-								usingPrimaryDirection = false;
+//								usingPrimaryDirection = false;
 								if (x != 0) {
 									x = 0;
 									y = toDest.y > 0 ? 1 : -1;
@@ -296,7 +304,7 @@ public class Enemy : Actor {
 								}
 							}
 							else {
-								usingPrimaryDirection = true;
+//								usingPrimaryDirection = true;
 							}
 						}
 						// Handling facing
@@ -335,6 +343,9 @@ public class Enemy : Actor {
 	}
 
 	bool playerSpotted() {
+		if (Player.instance.hidden) {
+			return false;
+		}
 		Vector3 toPlayer = Player.instance.transform.position - transform.position;
 		if (Vector3.Angle(getForward(), toPlayer) < FIELD_OF_VIEW_ANGLE) {
 			if (toPlayer.sqrMagnitude < spotDistanceSqr) {
@@ -351,6 +362,9 @@ public class Enemy : Actor {
 	}
 
 	bool playerTracked() {
+		if (Player.instance.hidden) {
+			return false;
+		}
 		Vector3 toPlayer = Player.instance.transform.position - transform.position;
 		if (toPlayer.sqrMagnitude < trackDistanceSqr) {
 			float manhattanDistanceToPlayer = Mathf.Abs(toPlayer.x) + Mathf.Abs(toPlayer.y) + Mathf.Abs(toPlayer.z);
@@ -365,49 +379,15 @@ public class Enemy : Actor {
 	}
 
 	bool hasClearShot() {
-		RaycastHit2D hitInfo = Physics2D.CircleCast(transform.position, radius, getForward(), weapon.range, 1 << Layers.PLAYER);
-		if (hitInfo.collider != null) {
-			return true;
+		if (!(weapon is MeleeWeapon) && Player.instance.hidden) {
+			return false;
 		}
-		return false;
+		return weapon.hasClearShot(this, Layers.PLAYER);
 	}
-	
-//	bool hasClearShot(float range) {
-//		Vector3 toPlayer = player.position - transform.position;
-//		RaycastHit hitInfo;
-//		if (Physics.SphereCast(transform.position, 0.2f, toPlayer, out hitInfo, range + capsuleRadius)) {
-//			if (hitInfo.collider.gameObject.layer == 8) {
-//				return true;
-//			}
-//		}
-//		if (Physics.Raycast(transform.position, toPlayer, out hitInfo, range + capsuleRadius)) {
-//			if (hitInfo.collider.gameObject.layer == 8) {
-//				return true;
-//			}
-//		}
-//		return false;
-//		//		if (Physics.SphereCast(transform.position, 0.2f, toPlayer, out hitInfo, range + capsuleRadius, 1 << 8)) {
-//		//			return true;
-//		//		}
-//		//		if (Physics.Raycast(transform.position, toPlayer, out hitInfo, range + capsuleRadius, 1 << 8)) {
-//		//			return true;
-//		//		}
-//		//		return false;
-//	}
+
 
 	bool reachedDestination() {
 		return path.Count == 0 || (destination - transform.position).sqrMagnitude < stoppingDistanceSqr;
-//		return agent.remainingDistance == Mathf.Infinity || agent.remainingDistance <= agent.stoppingDistance || isFacingANavMeshObstacle();
 	}
-	
-//	bool isFacingANavMeshObstacle() {
-//		RaycastHit[] hits = Physics.RaycastAll(transform.position, transform.forward, agent.radius + 0.25f);
-//		foreach (RaycastHit hit in hits) {
-//			if (hit.transform.GetComponentInChildren<NavMeshObstacle>() != null) {
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
 
 }

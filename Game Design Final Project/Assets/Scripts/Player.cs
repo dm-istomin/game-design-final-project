@@ -18,6 +18,7 @@ public class Player : Actor {
 //	const float TOP_SPEED_SQR = TOP_SPEED * TOP_SPEED;
 
 	public Image weaponUI;
+	public Text ammoUI;
 
 	public int keys {
 		get {
@@ -37,6 +38,7 @@ public class Player : Actor {
 			Debug.LogWarning("The player is not set to the Player layer");
 		}
 		hp = MAX_HP;
+		updateAmmo();
 	}
 
 	new void Update() {
@@ -85,31 +87,63 @@ public class Player : Actor {
 
 	void actionControls() {
 		if (Input.GetButtonDown("Attack")) {
-			attack();
-		}
-		else if (Input.GetButtonDown("Pickup")) {
+//		else if (Input.GetButtonDown("Pickup")) {
 			RaycastHit2D hitInfo = Physics2D.CircleCast(transform.position, radius - 0.05f, getForward(), 0.2f, ~(1 << Layers.PLAYER));
 			if (hitInfo.collider != null) {
 				if (hitInfo.collider.gameObject.layer == Layers.WEAPON) {
 					if (hitInfo.collider.GetComponentInParent<Weapon>() != null) {
 						// Picked up weapon
 						if (weapon != null) {
-							weapon.gameObject.SetActive(true);
-							weapon.transform.position = transform.position + (getForward() * (radius + weapon.radius));
+							unhide();
+							if (weapon is InvisibilityRing && weapon.ammo <= 0) {
+								destroyWeapon();
+							}
+							else {
+								weapon.gameObject.SetActive(true);
+								weapon.transform.position = transform.position + (getForward() * (radius + weapon.radius));
+							}
 						}
 						weapon = hitInfo.collider.GetComponentInParent<Weapon>();
 						weapon.gameObject.SetActive(false);
 						weaponUI.enabled = true;
 						weaponUI.sprite = weapon.GetComponent<SpriteRenderer>().sprite;
+						updateAmmo();
+						return;
 					}
 					else {
 						// Picked up key
 						keys += 1;
 						Destroy(hitInfo.collider.gameObject);
+						return;
 					}
 				}
 			}
+			attack();
 		}
+	}
+
+	public void updateAmmo() {
+		if (weapon == null) {
+			ammoUI.text = "";
+		}
+		else {
+			if (weapon.ammo == 0 && !(weapon is InvisibilityRing)) {
+				destroyWeapon();
+			}
+			else if (weapon.ammo >= 0) {
+				ammoUI.text = "x" + weapon.ammo.ToString();
+			}
+			else {
+				ammoUI.text = "";
+			}
+		}
+	}
+
+	public void destroyWeapon() {
+		Destroy(weapon.gameObject);
+		weapon = null;
+		weaponUI.enabled = false;
+		ammoUI.text = "";
 	}
 
 	public override void takeDamage(int damage) {

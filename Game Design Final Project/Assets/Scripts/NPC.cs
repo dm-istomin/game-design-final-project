@@ -112,7 +112,7 @@ public class NPC : Actor {
 		float timeToRecalculateDirection = 0;
 		int x = 0;
 		int y = 0;
-		bool usingPrimaryDirection = true;
+//		bool usingPrimaryDirection = true;
 		while (true) {
 			if (!hasControl) {
 				yield return null;
@@ -159,7 +159,7 @@ public class NPC : Actor {
 							RaycastHit2D hitInfo = Physics2D.CircleCast(transform.position, radius - 0.05f, new Vector2(x, y), 0.25f, ~(1 << Layers.ENEMY | 1 << Layers.PLAYER | 1 << Layers.NPC));
 							if (hitInfo.collider != null) {
 								// Can't move the preferred direction, try the secondary direction
-								usingPrimaryDirection = false;
+//								usingPrimaryDirection = false;
 								if (x != 0) {
 									x = 0;
 									y = toDest.y > 0 ? 1 : -1;
@@ -170,7 +170,7 @@ public class NPC : Actor {
 								}
 							}
 							else {
-								usingPrimaryDirection = true;
+//								usingPrimaryDirection = true;
 							}
 						}
 						// Handling facing
