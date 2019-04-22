@@ -11,8 +11,16 @@ public class WorldGrid : MonoBehaviour {
 	public Room endRoomPrefab;
 	public Room xAxisCorridorPrefab;
 	public Room yAxisCorridorPrefab;
+
+	public List<MeleeWeapon> meleeWeaponPrefabs;
+	public List<RangedWeapon> rangedWeaponPrefabs;
+	public InvisibilityRing ringPrefab;
+	public List<Projectile> projectilePrefabs;
+	public Key keyPrefab;
+
 	public int numRoomsToGenerate = 10;
 	public int maxIterations = 50;
+	public int numKeys = 3;
 
 	List<Room> generatedRooms = new List<Room>();
 	List<RoomConnector> availableSpaces = new List<RoomConnector>();
@@ -234,12 +242,13 @@ public class WorldGrid : MonoBehaviour {
 			availableSpaces.Add(conn);
 		}
 
-		Debug.Log("Populating rooms...");
+		Debug.Log("Generating other rooms...");
 		while (generatedRooms.Count < numRoomsToGenerate && numIterations < maxIterations) {
-			Debug.Log("Generating random room, iteration #" + numIterations);
 			GenerateRandomRoom();
 			numIterations++;
 		}
+
+		Debug.Log("... Finished after " + numIterations + " iterations");
 
 		Debug.Log("Adding end room...");
 		Room endRoom = Instantiate(endRoomPrefab);
@@ -298,5 +307,46 @@ public class WorldGrid : MonoBehaviour {
 				}
 			}
 		}
+
+		Debug.Log("Placing enemies...");
+		string[] difficulty = {"easy", "medium", "hard"};
+
+		foreach (Room r in generatedRooms) {
+			int randomDiffIdx = UnityEngine.Random.Range(0, difficulty.Length);
+			r.ActivateEnemies(difficulty[randomDiffIdx]);
+		}
+
+		Debug.Log("Placing keys...");
+
+		List<int> keyLocations = new List<int>();
+
+		while (keyLocations.Count < numKeys) {
+			// NOTE: keys can't spawn in starting or ending room
+			int keyLocation = UnityEngine.Random.Range(1, generatedRooms.Count - 1);
+			if (!keyLocations.Contains(keyLocation)) {
+				keyLocations.Add(keyLocation);
+				Room keyRoom = generatedRooms[keyLocation];
+				Instantiate(keyPrefab, keyRoom.transform.position + new Vector3(1, 0, 0), Quaternion.identity);
+			}
+		}
+
+		Debug.Log("Placing weapons...");
+
+		foreach (MeleeWeapon meleePrefab in meleeWeaponPrefabs) {
+			int location = UnityEngine.Random.Range(1, generatedRooms.Count - 1);
+				Room weaponRoom = generatedRooms[location];
+			Instantiate(meleePrefab, weaponRoom.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
+		}
+
+		for (int i = 0; i < rangedWeaponPrefabs.Count; i++) {
+			int location = UnityEngine.Random.Range(1, generatedRooms.Count - 1);
+			Room weaponRoom = generatedRooms[location];
+			RangedWeapon rangedPrefab = rangedWeaponPrefabs[i];
+			Projectile projectilePrefab = projectilePrefabs[i];
+			Instantiate(rangedPrefab, weaponRoom.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
+			Instantiate(projectilePrefab, weaponRoom.transform.position + new Vector3(1, 0, 0), Quaternion.identity);
+		}
+
+		Debug.Log("Dungeon generated!");
 	}
 }

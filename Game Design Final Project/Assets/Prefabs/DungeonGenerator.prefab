@@ -66,7 +66,7 @@ MonoBehaviour:
   yAxisCorridorPrefab: {fileID: 114537937185065612, guid: f5dd134a516d84db2af0555b94919b8b,
     type: 2}
   numRoomsToGenerate: 10
-  maxIterations: 50
+  maxIterations: 25
 --- !u!156049354 &2569400268537221260
 Grid:
   m_ObjectHideFlags: 1
