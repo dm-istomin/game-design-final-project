@@ -91,7 +91,7 @@ public class Player : Actor {
 			RaycastHit2D hitInfo = Physics2D.CircleCast(transform.position, radius - 0.05f, getForward(), 0.2f, ~(1 << Layers.PLAYER));
 			if (hitInfo.collider != null) {
 				if (hitInfo.collider.gameObject.layer == Layers.WEAPON) {
-					if (hitInfo.collider.GetComponentInParent<Weapon>() != null) {
+					if (hitInfo.collider.GetComponent<Weapon>() != null) {
 						// Picked up weapon
 						if (weapon != null) {
 							unhide();
@@ -103,11 +103,17 @@ public class Player : Actor {
 								weapon.transform.position = transform.position + (getForward() * (radius + weapon.radius));
 							}
 						}
-						weapon = hitInfo.collider.GetComponentInParent<Weapon>();
+						weapon = hitInfo.collider.GetComponent<Weapon>();
 						weapon.gameObject.SetActive(false);
 						weaponUI.enabled = true;
 						weaponUI.sprite = weapon.GetComponent<SpriteRenderer>().sprite;
 						updateAmmo();
+						return;
+					}
+					else if (hitInfo.collider.GetComponent<Item>() != null) {
+						// Picked up Item
+						hitInfo.collider.GetComponent<Item>().use();
+						Destroy(hitInfo.collider.gameObject);
 						return;
 					}
 					else {

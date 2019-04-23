@@ -11,7 +11,7 @@ public class Projectile : MonoBehaviour {
 	public float radius;
 
 	new Rigidbody2D rigidbody;
-	int opponentLayer;
+	int opponentLayer = -1;
 
 	void Awake() {
 		rigidbody = GetComponent<Rigidbody2D>();
@@ -24,7 +24,7 @@ public class Projectile : MonoBehaviour {
 	}
 	
 	void OnCollisionEnter2D(Collision2D c) {
-		if (c.gameObject.layer == opponentLayer) {
+		if (c.gameObject.layer == opponentLayer && opponentLayer != -1) {
 			c.gameObject.GetComponent<Actor>().takeDamage(damage);
 		}
 		Destroy(gameObject);

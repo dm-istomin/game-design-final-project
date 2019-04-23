@@ -924,14 +924,14 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 114917171147828842, guid: 1fab1c0f39d524aeba1621684d8cf97d,
         type: 2}
-      propertyPath: ammoUI
-      value: 
-      objectReference: {fileID: 769646876}
-    - target: {fileID: 114917171147828842, guid: 1fab1c0f39d524aeba1621684d8cf97d,
-        type: 2}
       propertyPath: weaponUI
       value: 
       objectReference: {fileID: 728462026}
+    - target: {fileID: 114917171147828842, guid: 1fab1c0f39d524aeba1621684d8cf97d,
+        type: 2}
+      propertyPath: ammoUI
+      value: 
+      objectReference: {fileID: 769646876}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1fab1c0f39d524aeba1621684d8cf97d, type: 2}
   m_IsPrefabParent: 0
