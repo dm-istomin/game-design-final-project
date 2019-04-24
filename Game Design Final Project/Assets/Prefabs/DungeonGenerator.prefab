@@ -65,8 +65,16 @@ MonoBehaviour:
     type: 2}
   yAxisCorridorPrefab: {fileID: 114537937185065612, guid: f5dd134a516d84db2af0555b94919b8b,
     type: 2}
+  itemPrefabs:
+  - {fileID: 1358713520624076, guid: be388c8dad67847f8bce2e80c960cc0d, type: 2}
+  - {fileID: 1322179140443316, guid: b29e0e354774b42d994f24997b6c3974, type: 2}
+  - {fileID: 1153888672696260, guid: e64d99eddc89b415b81cc0f501480c56, type: 2}
+  - {fileID: 1354133891537864, guid: 4a888e86027124f9ab8759e79d39d13b, type: 2}
+  keyPrefab: {fileID: 114110122112915160, guid: 5b45cd00bf85346a6bfe0135db65f759,
+    type: 2}
   numRoomsToGenerate: 10
-  maxIterations: 25
+  maxIterations: 30
+  numKeys: 3
 --- !u!156049354 &2569400268537221260
 Grid:
   m_ObjectHideFlags: 1

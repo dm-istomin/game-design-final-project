@@ -120,26 +120,6 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 681074467}
     m_Modifications:
-    - target: {fileID: 114142599675601824, guid: d90e6849184ac4786babbffed1334790,
-        type: 2}
-      propertyPath: weaponPrefabs.Array.size
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 114142599675601824, guid: d90e6849184ac4786babbffed1334790,
-        type: 2}
-      propertyPath: projectilePrefabs.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114142599675601824, guid: d90e6849184ac4786babbffed1334790,
-        type: 2}
-      propertyPath: meleeWeaponPrefabs.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114142599675601824, guid: d90e6849184ac4786babbffed1334790,
-        type: 2}
-      propertyPath: rangedWeaponPrefabs.Array.size
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4145058439735952, guid: d90e6849184ac4786babbffed1334790, type: 2}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -171,57 +151,6 @@ Prefab:
     - target: {fileID: 4145058439735952, guid: d90e6849184ac4786babbffed1334790, type: 2}
       propertyPath: m_RootOrder
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114142599675601824, guid: d90e6849184ac4786babbffed1334790,
-        type: 2}
-      propertyPath: keyPrefab
-      value: 
-      objectReference: {fileID: 114110122112915160, guid: 5b45cd00bf85346a6bfe0135db65f759,
-        type: 2}
-    - target: {fileID: 114142599675601824, guid: d90e6849184ac4786babbffed1334790,
-        type: 2}
-      propertyPath: weaponPrefabs.Array.data[0]
-      value: 
-      objectReference: {fileID: 114113726571453424, guid: b29e0e354774b42d994f24997b6c3974,
-        type: 2}
-    - target: {fileID: 114142599675601824, guid: d90e6849184ac4786babbffed1334790,
-        type: 2}
-      propertyPath: ringPrefab
-      value: 
-      objectReference: {fileID: 114113726571453424, guid: b29e0e354774b42d994f24997b6c3974,
-        type: 2}
-    - target: {fileID: 114142599675601824, guid: d90e6849184ac4786babbffed1334790,
-        type: 2}
-      propertyPath: rangedWeaponPrefabs.Array.data[0]
-      value: 
-      objectReference: {fileID: 114688679742584660, guid: e64d99eddc89b415b81cc0f501480c56,
-        type: 2}
-    - target: {fileID: 114142599675601824, guid: d90e6849184ac4786babbffed1334790,
-        type: 2}
-      propertyPath: meleeWeaponPrefabs.Array.data[0]
-      value: 
-      objectReference: {fileID: 114677264800285774, guid: 4a888e86027124f9ab8759e79d39d13b,
-        type: 2}
-    - target: {fileID: 114142599675601824, guid: d90e6849184ac4786babbffed1334790,
-        type: 2}
-      propertyPath: projectilePrefabs.Array.data[0]
-      value: 
-      objectReference: {fileID: 114096900079274524, guid: 86dce661c74504055b79109850e33a07,
-        type: 2}
-    - target: {fileID: 114142599675601824, guid: d90e6849184ac4786babbffed1334790,
-        type: 2}
-      propertyPath: numRoomsToGenerate
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 114142599675601824, guid: d90e6849184ac4786babbffed1334790,
-        type: 2}
-      propertyPath: maxIterations
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 114142599675601824, guid: d90e6849184ac4786babbffed1334790,
-        type: 2}
-      propertyPath: enabled
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: d90e6849184ac4786babbffed1334790, type: 2}
@@ -920,7 +849,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4482899615644482, guid: 1fab1c0f39d524aeba1621684d8cf97d, type: 2}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 114917171147828842, guid: 1fab1c0f39d524aeba1621684d8cf97d,
         type: 2}
