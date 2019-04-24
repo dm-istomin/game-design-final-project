@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Face R
+  m_Controller: {fileID: 9100000, guid: 660a1a53225b7481eade98fe65575092, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: a7f55389f21a048a0981146eebf1b124, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 92f5f92b02fc34776b5a971ac5d74090, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 5b8241a4c60b84126afff687386169c8, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 8f004590b5cb94847b82010e5390a6cd, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: f0ab359cfb87c4eb596b77d9bdcaf7b5, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: b24c86755dd0e438f9d1a8a4c28cf96d, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: b3ffb9d0000ac476c9c28cb67312ab56, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: aeef4cf60f8294acc98ed4532af121a6, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: eac0bd664c94f4649ae279e76c91d05f, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: b842c309343c540cd859536dcc3e166d, type: 2}

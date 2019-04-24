@@ -16,17 +16,12 @@ public abstract class Actor : MonoBehaviour {
 			if (_facing != value && 
 				!((_facing == Facing.Left && value == Facing.Right) || (_facing == Facing.Right && value == Facing.Left))) {
 				// Needs to change character controllers
-				if (value == Facing.Up) {
-					animator.runtimeAnimatorController = controllerUp;
-				}
-				else if (value == Facing.Down) {
-					animator.runtimeAnimatorController = controllerDown;
-				}
-				else {
-					animator.runtimeAnimatorController = controllerRight;
-				}
+				_facing = value;
+				updateOverrideController();
 			}
-			_facing = value;
+			else {
+				_facing = value;
+			}
 		}
 	}
 	int _facing;
@@ -52,6 +47,18 @@ public abstract class Actor : MonoBehaviour {
 
 	protected void Update() {
 		spriteRenderer.flipX = (facing == Facing.Left);
+	}
+
+	protected void updateOverrideController() {
+		if (_facing == Facing.Up) {
+			animator.runtimeAnimatorController = controllerUp;
+		}
+		else if (_facing == Facing.Down) {
+			animator.runtimeAnimatorController = controllerDown;
+		}
+		else {
+			animator.runtimeAnimatorController = controllerRight;
+		}
 	}
 
 	public Vector3 getForward() {

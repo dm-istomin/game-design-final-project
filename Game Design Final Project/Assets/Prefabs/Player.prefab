@@ -114,6 +114,22 @@ MonoBehaviour:
   controllerRight: {fileID: 22100000, guid: e8037f6a95a8e457c96d55f132ffe2ce, type: 2}
   controllerDown: {fileID: 22100000, guid: 794339972bfea4481b90a10cccbabe96, type: 2}
   weapon: {fileID: 0}
+  unarmedControllerUp: {fileID: 22100000, guid: d91c99caaa7ea4c82b93ebd6d7274496,
+    type: 2}
+  unarmedControllerRight: {fileID: 22100000, guid: 9878809993f5d49ada5b595e25f84e09,
+    type: 2}
+  unarmedControllerDown: {fileID: 22100000, guid: 6a609cf2cd914453ea22bf1deaf50748,
+    type: 2}
+  meleeControllerUp: {fileID: 22100000, guid: 078d819c42a2646b182b441b1437b3c2, type: 2}
+  meleeControllerRight: {fileID: 22100000, guid: e8037f6a95a8e457c96d55f132ffe2ce,
+    type: 2}
+  meleeControllerDown: {fileID: 22100000, guid: 794339972bfea4481b90a10cccbabe96,
+    type: 2}
+  rangedControllerUp: {fileID: 22100000, guid: 181b31a30207e4f24950d85a5d6f61e6, type: 2}
+  rangedControllerRight: {fileID: 22100000, guid: 1129cd390b2c744b98aecc9ad9d0c5c9,
+    type: 2}
+  rangedControllerDown: {fileID: 22100000, guid: 9a10128c898d6460aa4eff487e32b80d,
+    type: 2}
   weaponUI: {fileID: 0}
   ammoUI: {fileID: 0}
 --- !u!212 &212026972778077978
