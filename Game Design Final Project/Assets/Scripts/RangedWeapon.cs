@@ -23,11 +23,18 @@ public class RangedWeapon : Weapon {
 //	}
 
 	public override bool hasClearShot(Actor actor, int opponentLayer) {
-		RaycastHit2D hitInfo = Physics2D.CircleCast(getProjectileOrigin(actor), projectile.radius, actor.getForward(), 10f);
+		/*
+		RaycastHit2D hitInfo = Physics2D.CircleCast(getProjectileOrigin(actor), projectile.radius, actor.getForward(), 10f, 1 << opponentLayer);//, ~(1 << actor.gameObject.layer));
+		if (hitInfo.collider != null) {
+			Debug.Log(hitInfo.collider.name);
+		}
 		if (hitInfo.collider != null && hitInfo.collider.gameObject.layer == opponentLayer) {
 			return true;
 		}
 		return false;
+		*/
+		Vector3 toPlayer = Player.instance.transform.position - actor.transform.position;
+		return (Vector3.Angle(actor.getForward(), toPlayer) < 45f);
 	}
 
 	Vector3 getProjectileOrigin(Actor actor) {

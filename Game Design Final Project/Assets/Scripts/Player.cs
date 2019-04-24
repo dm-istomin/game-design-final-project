@@ -17,6 +17,16 @@ public class Player : Actor {
 //	const float ATTACK_RANGE = 0.5f;
 //	const float TOP_SPEED_SQR = TOP_SPEED * TOP_SPEED;
 
+	[SerializeField] AnimatorOverrideController unarmedControllerUp;
+	[SerializeField] AnimatorOverrideController unarmedControllerRight;
+	[SerializeField] AnimatorOverrideController unarmedControllerDown;
+	[SerializeField] AnimatorOverrideController meleeControllerUp;
+	[SerializeField] AnimatorOverrideController meleeControllerRight;
+	[SerializeField] AnimatorOverrideController meleeControllerDown;
+	[SerializeField] AnimatorOverrideController rangedControllerUp;
+	[SerializeField] AnimatorOverrideController rangedControllerRight;
+	[SerializeField] AnimatorOverrideController rangedControllerDown;
+
 	public Image weaponUI;
 	public Text ammoUI;
 
@@ -39,6 +49,7 @@ public class Player : Actor {
 		}
 		hp = MAX_HP;
 		updateAmmo();
+		updateOverrideControllerType();
 	}
 
 	new void Update() {
@@ -91,7 +102,7 @@ public class Player : Actor {
 			RaycastHit2D hitInfo = Physics2D.CircleCast(transform.position, radius - 0.05f, getForward(), 0.2f, ~(1 << Layers.PLAYER));
 			if (hitInfo.collider != null) {
 				if (hitInfo.collider.gameObject.layer == Layers.WEAPON) {
-					if (hitInfo.collider.GetComponentInParent<Weapon>() != null) {
+					if (hitInfo.collider.GetComponent<Weapon>() != null) {
 						// Picked up weapon
 						if (weapon != null) {
 							unhide();
@@ -103,11 +114,18 @@ public class Player : Actor {
 								weapon.transform.position = transform.position + (getForward() * (radius + weapon.radius));
 							}
 						}
-						weapon = hitInfo.collider.GetComponentInParent<Weapon>();
+						weapon = hitInfo.collider.GetComponent<Weapon>();
 						weapon.gameObject.SetActive(false);
 						weaponUI.enabled = true;
 						weaponUI.sprite = weapon.GetComponent<SpriteRenderer>().sprite;
 						updateAmmo();
+						updateOverrideControllerType();
+						return;
+					}
+					else if (hitInfo.collider.GetComponent<Item>() != null) {
+						// Picked up Item
+						hitInfo.collider.GetComponent<Item>().use();
+						Destroy(hitInfo.collider.gameObject);
 						return;
 					}
 					else {
@@ -120,6 +138,34 @@ public class Player : Actor {
 			}
 			attack();
 		}
+	}
+
+	void updateOverrideControllerType() {
+		if (weapon == null) {
+			// Unarmed
+			controllerUp = unarmedControllerUp;
+			controllerRight = unarmedControllerRight;
+			controllerDown = unarmedControllerDown;
+		}
+		else if (weapon is MeleeWeapon) {
+			// Melee Weapon
+			controllerUp = meleeControllerUp;
+			controllerRight = meleeControllerRight;
+			controllerDown = meleeControllerDown;
+		}
+		else if (weapon is RangedWeapon) {
+			// Ranged Weapon
+			controllerUp = rangedControllerUp;
+			controllerRight = rangedControllerRight;
+			controllerDown = rangedControllerDown;
+		}
+		else {
+			// Invisibility Ring
+			controllerUp = rangedControllerUp;
+			controllerRight = rangedControllerRight;
+			controllerDown = rangedControllerDown;
+		}
+		updateOverrideController();
 	}
 
 	public void updateAmmo() {
@@ -144,6 +190,7 @@ public class Player : Actor {
 		weapon = null;
 		weaponUI.enabled = false;
 		ammoUI.text = "";
+		updateOverrideControllerType();
 	}
 
 	public override void takeDamage(int damage) {
