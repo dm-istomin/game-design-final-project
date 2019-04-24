@@ -347,6 +347,10 @@ public class WorldGrid : MonoBehaviour {
 			Instantiate(projectilePrefab, weaponRoom.transform.position + new Vector3(1, 0, 0), Quaternion.identity);
 		}
 
+		int ringLocation = UnityEngine.Random.Range(1, generatedRooms.Count - 1);
+		Room ringRoom = generatedRooms[ringLocation];
+		Instantiate(ringPrefab, ringRoom.transform.position + new Vector3(-1, 0, 0), Quaternion.identity);
+
 		Debug.Log("Dungeon generated!");
 	}
 }
