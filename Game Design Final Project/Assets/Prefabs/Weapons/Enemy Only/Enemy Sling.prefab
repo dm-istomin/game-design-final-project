@@ -69,9 +69,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   radius: 0.5
-  ammo: -2
+  ammo: -4
   projectile: {fileID: 114096900079274524, guid: d290dbf449c0444b1b84273c93dfc87e,
     type: 2}
+  multiShot: 1
 --- !u!212 &212742342373004868
 SpriteRenderer:
   m_ObjectHideFlags: 1

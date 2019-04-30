@@ -10,6 +10,8 @@ public class Player : Actor {
 
 	public const int MAX_HP = 3;
 
+	const float INVINCIBLE_TIME = 0.4f;
+
 	const float TOP_SPEED = 5f;
 //	const float ACCELERATION = 10f;
 //	const float DECELERATION = 20f;
@@ -27,6 +29,8 @@ public class Player : Actor {
 	[SerializeField] AnimatorOverrideController rangedControllerRight;
 	[SerializeField] AnimatorOverrideController rangedControllerDown;
 
+	float invincibleTimer = 0f;
+
 	public Image weaponUI;
 	public Text ammoUI;
 
@@ -43,6 +47,7 @@ public class Player : Actor {
 
 	new void Awake() {
 		base.Awake();
+		Enemy.resetNumAlertedEnemies();
 		instance = this;
 		if (gameObject.layer != Layers.PLAYER) {
 			Debug.LogWarning("The player is not set to the Player layer");
@@ -65,6 +70,9 @@ public class Player : Actor {
 		}
 		else {
 			rigidbody.velocity = Vector2.zero;
+		}
+		if (invincibleTimer > 0) {
+			invincibleTimer -= Time.deltaTime;
 		}
 		base.Update();
 	}
@@ -120,6 +128,7 @@ public class Player : Actor {
 						weaponUI.sprite = weapon.GetComponent<SpriteRenderer>().sprite;
 						updateAmmo();
 						updateOverrideControllerType();
+						AudioManager.playSFX(AudioManager.instance.pickupSfx);
 						return;
 					}
 					else if (hitInfo.collider.GetComponent<Item>() != null) {
@@ -130,6 +139,7 @@ public class Player : Actor {
 					}
 					else {
 						// Picked up key
+						AudioManager.playSFX(AudioManager.instance.keySfx);
 						keys += 1;
 						Destroy(hitInfo.collider.gameObject);
 						return;
@@ -194,7 +204,12 @@ public class Player : Actor {
 	}
 
 	public override void takeDamage(int damage) {
+		if (invincibleTimer > 0) {
+			return;
+		}
+		invincibleTimer = INVINCIBLE_TIME;
 		hp -= damage;
+		AudioManager.playSFX(AudioManager.instance.hurtSfx);
 		if (hp <= 0) {
 			SceneManager.LoadScene("Game Over");
 		}

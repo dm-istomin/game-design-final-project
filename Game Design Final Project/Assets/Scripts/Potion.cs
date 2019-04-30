@@ -12,6 +12,7 @@ public class Potion : Item {
 			Player.instance.hp = Player.MAX_HP;
 		}
 		PlayerGUI.updateHealthDisplay();
+		AudioManager.playSFX(AudioManager.instance.potionUseSfx);
 	}
 
 }

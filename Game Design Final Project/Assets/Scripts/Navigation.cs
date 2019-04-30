@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class Navigation {
 	
-	const float MAX_COMPUTATION_TIME = 0.001f;
+	const float MAX_COMPUTATION_TIME = 0.003f;
 	const float GRANULARITY = 0.5f;
 
 	static Vector3 getPosFromCoord(Pair coord) {
