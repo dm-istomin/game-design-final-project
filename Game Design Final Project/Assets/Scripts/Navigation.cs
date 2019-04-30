@@ -5,12 +5,21 @@ using UnityEngine;
 public static class Navigation {
 	
 	const float MAX_COMPUTATION_TIME = 0.001f;
+	const float GRANULARITY = 0.5f;
+
+	static Vector3 getPosFromCoord(Pair coord) {
+		return new Vector3(coord.x * GRANULARITY, coord.y * GRANULARITY, 0);
+	}
+
+	static Pair getCoordFromPos(Vector3 pos) {
+		return new Pair(Mathf.RoundToInt(pos.x / GRANULARITY), Mathf.RoundToInt(pos.y / GRANULARITY));
+	}
 	
 	static Dictionary<Pair, bool> walkableCache = new Dictionary<Pair, bool>();
 
 	public static List<Vector3> findPath(Vector3 start, Vector3 goal) {
-		Pair startPair = new Pair(Mathf.RoundToInt(start.x - 0.5f), Mathf.RoundToInt(start.y - 0.5f));
-		Pair goalPair = new Pair(Mathf.RoundToInt(goal.x - 0.5f), Mathf.RoundToInt(goal.y - 0.5f));
+		Pair startPair = getCoordFromPos(start);//new Pair(Mathf.RoundToInt(start.x - 0.5f), Mathf.RoundToInt(start.y - 0.5f));
+		Pair goalPair = getCoordFromPos(goal);//new Pair(Mathf.RoundToInt(goal.x - 0.5f), Mathf.RoundToInt(goal.y - 0.5f));
 		goalPair = findClosestWalkableCoord(goalPair, walkableCache);
 		return findPathImplementation(startPair, goalPair, walkableCache);
 	}
@@ -95,9 +104,9 @@ public static class Navigation {
 				finalNode = popMin(openList);
 			}
 		}
-		List<Vector3> destinations = new List<Vector3>();
-		getPath(finalNode, destinations);
-		destinations.Reverse();
+		List<Pair> pathPoints = new List<Pair>();
+		getPath(finalNode, pathPoints);
+		List<Vector3> destinations = postProcessPaths(pathPoints);
 //		Debug.Log("A* took " + (Time.realtimeSinceStartup - startTime).ToString() + " seconds\t" + destinations.Count.ToString() + "\n" + start.ToString() + " " + finalNode.coord.ToString());
 		return destinations;
 	}
@@ -106,7 +115,7 @@ public static class Navigation {
 		if (walkableCache.ContainsKey(coord)) {
 			return walkableCache[coord];
 		}
-		Collider2D collider = Physics2D.OverlapCircle(new Vector2(coord.x + 0.5f, coord.y + 0.5f), 0.45f, ~(1 << Layers.PLAYER | 1 << Layers.ENEMY | 1 << Layers.NPC));
+		Collider2D collider = Physics2D.OverlapCircle(getPosFromCoord(coord), 0.45f, ~(1 << Layers.PLAYER | 1 << Layers.ENEMY | 1 << Layers.NPC));
 		bool canWalkThere = (collider == null);
 		if (!canWalkThere && collider.gameObject.layer != Layers.WEAPON) {
 			walkableCache.Add(coord, canWalkThere); // Only cache colliders that are part of the level geometry
@@ -145,12 +154,45 @@ public static class Navigation {
 		return best;
 	}
 	
-	static void getPath(Node end, List<Vector3> destinations) {
+	static void getPath(Node end, List<Pair> pathPoints) {
 		if (end != null) {
-			destinations.Add(end.position);
-			getPath(end.prev, destinations);
+			pathPoints.Add(end.coord);
+			getPath(end.prev, pathPoints);
 		}
 	}
+
+	// Reverses the path, prunes out useless mid points, and converts the coordinates to world-space positions
+	static List<Vector3> postProcessPaths(List<Pair> pathPoints) {
+		List<Vector3> destinations = new List<Vector3>();
+		if (pathPoints.Count <= 1) {
+			for (int i = pathPoints.Count - 1; i >= 0; --i) {
+				destinations.Add(getPosFromCoord(pathPoints[i]));
+			}
+			return destinations;
+		}
+		// Pruning the path points
+		Pair priorPivot = pathPoints[pathPoints.Count - 1];
+		bool scanningHorizontally = priorPivot.y == pathPoints[pathPoints.Count - 2].y;
+		for (int i = pathPoints.Count - 2; i >= 0; --i) {
+			if (scanningHorizontally) {
+				if (priorPivot.y != pathPoints[i].y) {
+					priorPivot = pathPoints[i + 1];
+					destinations.Add(getPosFromCoord(priorPivot));
+					scanningHorizontally = false;
+				}
+			}
+			else {
+				if (priorPivot.x != pathPoints[i].x) {
+					priorPivot = pathPoints[i + 1];
+					destinations.Add(getPosFromCoord(priorPivot));
+					scanningHorizontally = true;
+				}
+			}
+		}
+		destinations.Add(getPosFromCoord(pathPoints[0]));
+		return destinations;
+	}
+
 	
 	
 	
@@ -161,12 +203,6 @@ public static class Navigation {
 		public float f;
 		public Pair coord;
 		public Node prev;
-		
-		public Vector3 position {
-			get {
-				return new Vector3(coord.x + 0.5f, coord.y + 0.5f, 0);
-			}
-		}
 		
 		static float getHeuristic(Pair coord, Pair goal) {
 			return Mathf.Abs(coord.x - goal.x) + Mathf.Abs(coord.y - goal.y);

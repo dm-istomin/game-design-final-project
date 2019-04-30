@@ -128,7 +128,7 @@ public abstract class Actor : MonoBehaviour {
 
 	public void hide() {
 		hidden = true;
-		spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 0.5f);
+		spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 0.25f);
 	}
 
 	public void unhide() {

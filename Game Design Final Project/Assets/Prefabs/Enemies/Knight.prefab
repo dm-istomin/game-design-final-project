@@ -303,14 +303,14 @@ MonoBehaviour:
   controllerUp: {fileID: 22100000, guid: 71141bf933cfa43b39f8bec20c16fe25, type: 2}
   controllerRight: {fileID: 22100000, guid: 5cb104db6f7034111b0f7ef37e7219a7, type: 2}
   controllerDown: {fileID: 22100000, guid: da410a69bafe74a7d829118cad318f14, type: 2}
-  weapon: {fileID: 114677264800285774, guid: 4a888e86027124f9ab8759e79d39d13b, type: 2}
+  weapon: {fileID: 114677264800285774, guid: d2a7b7e83349a433486b6a11f6cfd9cb, type: 2}
   spotDistance: 4
   trackDistance: 6
   waitIntervalLow: 0
   waitIntervalHigh: 5
   wanderSpeed: 2
-  chaseSpeed: 4
-  attackInterval: 0.8
+  chaseSpeed: 4.75
+  attackInterval: 0.4
   debugVision: 1
 --- !u!136 &136176790603062984
 CapsuleCollider:

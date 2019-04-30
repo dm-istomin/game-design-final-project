@@ -309,8 +309,8 @@ MonoBehaviour:
   waitIntervalLow: 0
   waitIntervalHigh: 5
   wanderSpeed: 1.5
-  chaseSpeed: 3.5
-  attackInterval: 0.8
+  chaseSpeed: 4
+  attackInterval: 0.5
   debugVision: 1
 --- !u!136 &136303102469987122
 CapsuleCollider:
