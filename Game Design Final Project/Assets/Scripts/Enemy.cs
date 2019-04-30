@@ -109,6 +109,8 @@ public class Enemy : Actor {
 		trackDistanceSqr = trackDistance * trackDistance;
 		state = State.Wait;
 		stoppingDistance = 0.1f;
+		quad = transform.GetChild(0);
+		cyl = transform.GetChild(1);
 		StartCoroutine(navigationCoroutine());
 	}
 
@@ -120,6 +122,29 @@ public class Enemy : Actor {
 				patrolDestinations.Add(t.position);
 			}
 		}
+		Mesh m = quad.GetComponent<MeshFilter>().mesh;
+		m.vertices = new Vector3[] {
+			new Vector3(0, 0, 0),
+			Quaternion.Euler(0, 0, -FIELD_OF_VIEW_ANGLE) * Vector3.up * spotDistance,
+			Quaternion.Euler(0, 0, -FIELD_OF_VIEW_ANGLE * 0.75f) * Vector3.up * spotDistance,
+			Quaternion.Euler(0, 0, -FIELD_OF_VIEW_ANGLE * 0.5f) * Vector3.up * spotDistance,
+			Quaternion.Euler(0, 0, -FIELD_OF_VIEW_ANGLE * 0.25f) * Vector3.up * spotDistance,
+			Vector3.up * spotDistance,
+			Quaternion.Euler(0, 0, FIELD_OF_VIEW_ANGLE * 0.25f) * Vector3.up * spotDistance,
+			Quaternion.Euler(0, 0, FIELD_OF_VIEW_ANGLE * 0.5f) * Vector3.up * spotDistance,
+			Quaternion.Euler(0, 0, FIELD_OF_VIEW_ANGLE * 0.75f) * Vector3.up * spotDistance,
+			Quaternion.Euler(0, 0, FIELD_OF_VIEW_ANGLE) * Vector3.up * spotDistance,
+		};
+		m.triangles = new int[] {
+			0, 2, 1,
+			0, 3, 2,
+			0, 4, 3,
+			0, 5, 4,
+			0, 6, 5,
+			0, 7, 6,
+			0, 8, 7,
+			0, 9, 8,
+		};
 	}
 
 	new void Update() {
@@ -132,32 +157,28 @@ public class Enemy : Actor {
 		base.Update();
 	}
 
+	Transform quad;
+	Transform cyl;
+
 	void stateSpecificUpdates() {
-		transform.GetChild(0).gameObject.SetActive(debugVision && state != State.Chase);
-		transform.GetChild(1).gameObject.SetActive(debugVision && state == State.Chase);
+		quad.gameObject.SetActive(debugVision && state != State.Chase);
+		cyl.gameObject.SetActive(debugVision && state == State.Chase);
 		if (debugVision) {
 			if (state == State.Chase || state == State.Alert) {
-				transform.GetChild(1).localScale = new Vector3(2f * trackDistance, 0.5f, 2f * trackDistance);
+				cyl.localScale = new Vector3(2f * trackDistance, 0.5f, 2f * trackDistance);
 			}
 			else {
-				Mesh m = transform.GetChild(0).GetComponent<MeshFilter>().mesh;
-				m.vertices = new Vector3[] {
-					new Vector3(0, 0, 0),
-					Vector3.up * spotDistance,
-					Quaternion.Euler(0, 0, -FIELD_OF_VIEW_ANGLE) * Vector3.up * spotDistance,
-					Quaternion.Euler(0, 0, FIELD_OF_VIEW_ANGLE) * Vector3.up * spotDistance,
-				};
 				if (facing == Facing.Up) {
-					transform.GetChild(0).localRotation = Quaternion.Euler(0, 0, 0);
+					quad.localRotation = Quaternion.Euler(0, 0, 0);
 				}
 				else if (facing == Facing.Right) {
-					transform.GetChild(0).localRotation = Quaternion.Euler(0, 0, -90);
+					quad.localRotation = Quaternion.Euler(0, 0, -90);
 				}
 				else if (facing == Facing.Down) {
-					transform.GetChild(0).localRotation = Quaternion.Euler(0, 0, 180);
+					quad.localRotation = Quaternion.Euler(0, 0, 180);
 				}
 				else {
-					transform.GetChild(0).localRotation = Quaternion.Euler(0, 0, 90);
+					quad.localRotation = Quaternion.Euler(0, 0, 90);
 				}
 			}
 		}
@@ -240,12 +261,12 @@ public class Enemy : Actor {
 	}
 
 
-	const float REACTION_TIME = 0.15f;
+	const float REACTION_TIME = 0.25f;
 	IEnumerator navigationCoroutine() {
 		float timeToRecalculateDirection = 0;
 		int x = 0;
 		int y = 0;
-//		bool usingPrimaryDirection = true;
+		bool usingPrimaryDirection = true;
 		while (true) {
 			if (!hasControl) {
 				yield return null;
@@ -282,8 +303,8 @@ public class Enemy : Actor {
 						float toDestYDist = Mathf.Abs(toDest.y);
 						if (toDestXDist > 0 || toDestYDist > 0) {
 							float horizontalProbability = toDestXDist / (toDestXDist + toDestYDist);
-							//if (Random.value < horizontalProbability) {
-							if (horizontalProbability > 0.5f) {
+							if (Random.value < horizontalProbability) {
+//							if (horizontalProbability > 0.5f) {
 								x = toDest.x > 0 ? 1 : -1;
 							}
 							else {
@@ -293,7 +314,7 @@ public class Enemy : Actor {
 							RaycastHit2D hitInfo = Physics2D.CircleCast(transform.position, radius - 0.05f, new Vector2(x, y), 0.25f, ~(1 << Layers.ENEMY | 1 << Layers.PLAYER | 1 << Layers.NPC));
 							if (hitInfo.collider != null) {
 								// Can't move the preferred direction, try the secondary direction
-//								usingPrimaryDirection = false;
+								usingPrimaryDirection = false;
 								if (x != 0) {
 									x = 0;
 									y = toDest.y > 0 ? 1 : -1;
@@ -304,7 +325,7 @@ public class Enemy : Actor {
 								}
 							}
 							else {
-//								usingPrimaryDirection = true;
+								usingPrimaryDirection = true;
 							}
 						}
 						// Handling facing
@@ -316,21 +337,23 @@ public class Enemy : Actor {
 						}
 					}
 				}
-				/*
+				///*
 				// Preventing passing by the destination between reaction times
 				if (usingPrimaryDirection) {
 					if (x != 0) {
 						if (Mathf.Sign(x) != Mathf.Sign(toDest.x)) {
 							x = 0;
+							timeToRecalculateDirection = 0;
 						}
 					}
 					else if (y != 0) {
 						if (Mathf.Sign(y) != Mathf.Sign(toDest.y)) {
 							y = 0;
+							timeToRecalculateDirection = 0;
 						}
 					}
 				}
-				*/
+				//*/
 				animator.SetFloat("Speed", (x == 0 && y == 0) ? 0 : 1);
 				rigidbody.velocity = new Vector2(x * speed, y * speed);
 			}

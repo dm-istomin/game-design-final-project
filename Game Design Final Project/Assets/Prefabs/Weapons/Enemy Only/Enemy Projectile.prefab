@@ -9,45 +9,66 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1153888672696260}
+  m_RootGameObject: {fileID: 1185868221845640}
   m_IsPrefabParent: 1
---- !u!1 &1153888672696260
+--- !u!1 &1185868221845640
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 4125591759754512}
-  - component: {fileID: 212742342373004868}
-  - component: {fileID: 114688679742584660}
-  - component: {fileID: 58855735003243866}
-  m_Layer: 10
-  m_Name: Enemy Sling
+  - component: {fileID: 4860928347531270}
+  - component: {fileID: 212063894771260008}
+  - component: {fileID: 114096900079274524}
+  - component: {fileID: 50117248235979994}
+  - component: {fileID: 58970096088020234}
+  m_Layer: 0
+  m_Name: Enemy Projectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4125591759754512
+--- !u!4 &4860928347531270
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1153888672696260}
+  m_GameObject: {fileID: 1185868221845640}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.16, y: 3, z: 0}
+  m_LocalPosition: {x: -1.9820325, y: -0.66873443, z: 0.06369072}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!58 &58855735003243866
+--- !u!50 &50117248235979994
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1185868221845640}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!58 &58970096088020234
 CircleCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1153888672696260}
+  m_GameObject: {fileID: 1185868221845640}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
@@ -56,28 +77,27 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.4
---- !u!114 &114688679742584660
+  m_Radius: 0.1275
+--- !u!114 &114096900079274524
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1153888672696260}
+  m_GameObject: {fileID: 1185868221845640}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 89bf68ff9eb274099ae14f9182296850, type: 3}
+  m_Script: {fileID: 11500000, guid: 3e9c7f8f45e1d4989acd8ff0ceb76534, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 0.5
-  ammo: -2
-  projectile: {fileID: 114096900079274524, guid: d290dbf449c0444b1b84273c93dfc87e,
-    type: 2}
---- !u!212 &212742342373004868
+  damage: 1
+  speed: 10
+  radius: 0
+--- !u!212 &212063894771260008
 SpriteRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1153888672696260}
+  m_GameObject: {fileID: 1185868221845640}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -106,12 +126,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 6eb4d971471c046c698e52a198f7f21e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f487cd9e7c36141fab05804184abf33e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.02, y: 1.02}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

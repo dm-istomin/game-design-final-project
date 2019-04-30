@@ -8,6 +8,9 @@ public class InvisibilityRing : Weapon {
 	Actor user;
 
 	public override void use(Actor actor, int opponentLayer) {
+		if (actor.hidden) {
+			return;
+		}
 		ammo -= 1;
 		Player.instance.updateAmmo();
 		user = actor;

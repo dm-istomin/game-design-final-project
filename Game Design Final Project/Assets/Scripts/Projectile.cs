@@ -25,7 +25,13 @@ public class Projectile : MonoBehaviour {
 	
 	void OnCollisionEnter2D(Collision2D c) {
 		if (c.gameObject.layer == opponentLayer && opponentLayer != -1) {
-			c.gameObject.GetComponent<Actor>().takeDamage(damage);
+			Breakable b = c.gameObject.GetComponent<Breakable>();
+			if (b == null) {
+				c.gameObject.GetComponent<Actor>().takeDamage(damage);
+			}
+			else {
+				b.takeDamage();
+			}
 		}
 		Destroy(gameObject);
 	}
