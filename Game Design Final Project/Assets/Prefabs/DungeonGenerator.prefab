@@ -72,7 +72,7 @@ MonoBehaviour:
   - {fileID: 1354133891537864, guid: 4a888e86027124f9ab8759e79d39d13b, type: 2}
   keyPrefab: {fileID: 114110122112915160, guid: 5b45cd00bf85346a6bfe0135db65f759,
     type: 2}
-  numRoomsToGenerate: 10
+  numRoomsToGenerate: 15
   maxIterations: 30
   numKeys: 3
 --- !u!156049354 &2569400268537221260

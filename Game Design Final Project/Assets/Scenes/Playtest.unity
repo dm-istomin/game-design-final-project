@@ -152,16 +152,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114142599675601824, guid: d90e6849184ac4786babbffed1334790,
-        type: 2}
-      propertyPath: enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114142599675601824, guid: d90e6849184ac4786babbffed1334790,
-        type: 2}
-      propertyPath: numRoomsToGenerate
-      value: 15
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: d90e6849184ac4786babbffed1334790, type: 2}
   m_IsPrefabParent: 0
@@ -859,7 +849,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4482899615644482, guid: 1fab1c0f39d524aeba1621684d8cf97d, type: 2}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114917171147828842, guid: 1fab1c0f39d524aeba1621684d8cf97d,
         type: 2}
