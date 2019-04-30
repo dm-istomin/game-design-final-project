@@ -8,6 +8,7 @@ public class MeleeWeapon : Weapon {
 	public float range = 0.5f;
 
 	public override void use(Actor actor, int opponentLayer) {
+		AudioManager.playSFX(AudioManager.instance.swordUseSfx);
 		RaycastHit2D[] hitInfos = Physics2D.CircleCastAll(actor.transform.position, actor.radius, actor.getForward(), range, 1 << opponentLayer);
 		foreach (RaycastHit2D hit in hitInfos) {
 			Breakable b = hit.collider.gameObject.GetComponent<Breakable>();

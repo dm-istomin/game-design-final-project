@@ -7,12 +7,27 @@ public class RangedWeapon : Weapon {
 	public Projectile projectile;
 //	public float cooldown = 1f;
 //	float cooldownTimer = 0f;
+	public bool multiShot = false;
+
+	const float MULTI_SPREAD = 10f;
 
 	public override void use(Actor actor, int opponentLayer) {
 		ammo -= 1;
 		Player.instance.updateAmmo();
-		GameObject projectileObject = Instantiate(projectile.gameObject, getProjectileOrigin(actor), Quaternion.identity);
-		projectileObject.GetComponent<Projectile>().initailize(actor.getForward(), opponentLayer);
+		if (multiShot) {
+			GameObject projectileObject;
+			projectileObject = Instantiate(projectile.gameObject, getProjectileOrigin(actor, -MULTI_SPREAD), Quaternion.identity);
+			projectileObject.GetComponent<Projectile>().initailize(Quaternion.Euler(0, 0, -MULTI_SPREAD) * actor.getForward(), opponentLayer);
+			projectileObject = Instantiate(projectile.gameObject, getProjectileOrigin(actor), Quaternion.identity);
+			projectileObject.GetComponent<Projectile>().initailize(actor.getForward(), opponentLayer);
+			projectileObject = Instantiate(projectile.gameObject, getProjectileOrigin(actor, MULTI_SPREAD), Quaternion.identity);
+			projectileObject.GetComponent<Projectile>().initailize(Quaternion.Euler(0, 0, MULTI_SPREAD) * actor.getForward(), opponentLayer);
+		}
+		else {
+			GameObject projectileObject = Instantiate(projectile.gameObject, getProjectileOrigin(actor), Quaternion.identity);
+			projectileObject.GetComponent<Projectile>().initailize(actor.getForward(), opponentLayer);
+		}
+		AudioManager.playSFX(AudioManager.instance.slingUseSfx);
 //		cooldownTimer = cooldown;
 	}
 
@@ -39,6 +54,10 @@ public class RangedWeapon : Weapon {
 
 	Vector3 getProjectileOrigin(Actor actor) {
 		return actor.transform.position + (actor.getForward() * (actor.radius + projectile.radius + 0.2f));
+	}
+
+	Vector3 getProjectileOrigin(Actor actor, float spread) {
+		return actor.transform.position + ((Quaternion.Euler(0, 0, spread) * actor.getForward()) * (actor.radius + projectile.radius + 0.2f));
 	}
 
 }

@@ -5,6 +5,25 @@ using UnityEngine.AI;
 
 public class Enemy : Actor {
 
+	public static void resetNumAlertedEnemies() {
+		_numAlertedEnemies = 0;
+	}
+	static int numAlertedEnemies {
+		get {
+			return _numAlertedEnemies;
+		}
+		set {
+			if (_numAlertedEnemies > 0 && value <= 0) {
+				AudioManager.switchToWorldBGM();
+			}
+			else if (_numAlertedEnemies <= 0 && value > 0) {
+				AudioManager.switchToDangerBGM();
+			}
+			_numAlertedEnemies = value;
+		}
+	}
+	static int _numAlertedEnemies;
+
 	public enum State { Wait, Wander, Chase, Alert }
 
 	const float FIELD_OF_VIEW_ANGLE = 60f;
@@ -67,6 +86,9 @@ public class Enemy : Actor {
 			return _state;
 		}
 		set {
+			if (_state == State.Chase && value != State.Chase) {
+				numAlertedEnemies -= 1;
+			}
 			exclamationPoint.SetActive(false);
 			if (value == State.Wait) {
 				waitTimer = Random.Range(waitIntervalLow, waitIntervalHigh);
@@ -86,6 +108,7 @@ public class Enemy : Actor {
 				}
 			}
 			else if (value == State.Alert) {
+				AudioManager.playSFX(AudioManager.instance.alertSfx);
 				waitTimer = ALERT_PAUSE_DURATION;
 				speed = chaseSpeed;
 				destination = Player.instance.transform.position;
@@ -93,6 +116,9 @@ public class Enemy : Actor {
 			}
 			else if (value == State.Chase) {
 				attackTimer = 0;
+				if (_state != State.Chase) {
+					numAlertedEnemies += 1;
+				}
 			}
 			_state = value;
 		}
@@ -243,6 +269,9 @@ public class Enemy : Actor {
 		}
 
 		if (hp <= 0) {
+			if (state == State.Chase) {
+				numAlertedEnemies -= 1;
+			}
 			Destroy(gameObject);
 			return;
 		}

@@ -16,6 +16,7 @@ public class InvisibilityRing : Weapon {
 		user = actor;
 		user.hide();
 		actor.StartCoroutine(keepHidden());
+		AudioManager.playSFX(AudioManager.instance.ringUseSfx);
 	}
 
 	IEnumerator keepHidden() {

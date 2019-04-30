@@ -19,11 +19,14 @@ public class Projectile : MonoBehaviour {
 	}
 
 	public void initailize(Vector3 direction, int opponentLayer) {
-		rigidbody.velocity = direction * speed;
+		rigidbody.velocity = direction.normalized * speed;
 		this.opponentLayer = opponentLayer;
 	}
 	
 	void OnCollisionEnter2D(Collision2D c) {
+		if (c.gameObject.layer == Layers.PROJECTILE) {
+			return;
+		}
 		if (c.gameObject.layer == opponentLayer && opponentLayer != -1) {
 			Breakable b = c.gameObject.GetComponent<Breakable>();
 			if (b == null) {
