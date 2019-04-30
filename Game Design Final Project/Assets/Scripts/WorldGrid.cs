@@ -12,10 +12,6 @@ public class WorldGrid : MonoBehaviour {
 	public Room xAxisCorridorPrefab;
 	public Room yAxisCorridorPrefab;
 
-//	public List<MeleeWeapon> meleeWeaponPrefabs;
-//	public List<RangedWeapon> rangedWeaponPrefabs;
-//	public InvisibilityRing ringPrefab;
-//	public List<Projectile> projectilePrefabs;
 	public List<GameObject> itemPrefabs;
 	public Key keyPrefab;
 
@@ -25,6 +21,8 @@ public class WorldGrid : MonoBehaviour {
 
 	List<Room> generatedRooms = new List<Room>();
 	List<RoomConnector> availableSpaces = new List<RoomConnector>();
+  List<GameObject> items = new List<GameObject>();
+  List<Key> keys = new List<Key>();
 
 	bool IsOverlappingWithOtherRooms(Room room) {
 		foreach (Room placedRoom in generatedRooms) {
@@ -60,8 +58,13 @@ public class WorldGrid : MonoBehaviour {
 		return false;
 	}
 
-	void GenerateRoom(Room room, bool required) {
-		RoomConnector space = availableSpaces[UnityEngine.Random.Range(0, availableSpaces.Count)];
+  bool PlaceRoom(Room room) {
+		int spaceIdx = UnityEngine.Random.Range(0, availableSpaces.Count);
+    return PlaceRoom(room, spaceIdx);
+  }
+
+	bool PlaceRoom(Room room, int spaceIdx) {
+		RoomConnector space = availableSpaces[spaceIdx];
 
 		room.transform.SetParent(transform);
 
@@ -101,67 +104,17 @@ public class WorldGrid : MonoBehaviour {
 			foreach (RoomConnector conn in room.exits) { availableSpaces.Add(conn); }
 			availableSpaces.Remove(space);
 			availableSpaces.Remove(entrance);
+      return true;
 		} else {
-			if (!required) {
-				Destroy(room.gameObject);
-			} else {
-				Debug.Log("Could not place required room, trying again!");
-				GenerateRoom(room, required);
-			}
+      Destroy(room.gameObject);
+      return false;
 		}
 
 	}
 
 	void GenerateRandomRoom() {
 		Room room = Instantiate(mainRoomPrefabs[UnityEngine.Random.Range(0, mainRoomPrefabs.Count)]);
-		GenerateRoom(room, false);
-
-		/*
-		RoomConnector space = availableSpaces[UnityEngine.Random.Range(0, availableSpaces.Count)];
-
-		Room room = Instantiate(mainRoomPrefabs[UnityEngine.Random.Range(0, mainRoomPrefabs.Count)]);
-		room.transform.SetParent(transform);
-
-		bool isAligned = false;
-		RoomConnector entrance = null;
-
-		List<RoomConnector> shuffledExits = new List<RoomConnector>();
-		System.Random rand = new System.Random();
-
-		for (int i = 0; i < room.exits.Count; i++) {
-			shuffledExits.Add(room.exits[rand.Next(0, room.exits.Count)]);
-		}
-
-		foreach(RoomConnector conn in shuffledExits) {
-			room.transform.position = new Vector3(
-				space.transform.position.x,
-				space.transform.position.y,
-				0f
-			);
-
-			bool roomPlaced = TryAligning(space, room);
-
-			if (roomPlaced == true) {
-					isAligned = true;
-					room.transform.position = new Vector3(
-						Mathf.Round(room.transform.position.x),
-						Mathf.Round(room.transform.position.y),
-						Mathf.Round(room.transform.position.z)
-					);
-					entrance = conn;
-					generatedRooms.Add(room);
-					break;
-			}
-		}
-
-		if (isAligned) {
-			foreach (RoomConnector conn in room.exits) { availableSpaces.Add(conn); }
-			availableSpaces.Remove(space);
-			availableSpaces.Remove(entrance);
-		} else {
-			Destroy(room.gameObject);
-		}
-		*/
+		PlaceRoom(room);
 	}
 
 	bool IsRoomOverlapping(Room a, Room b) {
@@ -252,8 +205,15 @@ public class WorldGrid : MonoBehaviour {
 		Debug.Log("... Finished after " + numIterations + " iterations");
 
 		Debug.Log("Adding end room...");
-		Room endRoom = Instantiate(endRoomPrefab);
-		GenerateRoom(endRoom, true);
+    for (int i = 0; i < availableSpaces.Count; i++)  {
+      Room endRoom = Instantiate(endRoomPrefab);
+      bool placed = PlaceRoom(endRoom);
+
+      if (placed) {
+        Debug.Log("... end room placed.");
+        break;
+      }
+    }
 
 
 		Debug.Log("Toggling doors between rooms and adding corridors...");
@@ -327,36 +287,43 @@ public class WorldGrid : MonoBehaviour {
 			if (!keyLocations.Contains(keyLocation)) {
 				keyLocations.Add(keyLocation);
 				Room keyRoom = generatedRooms[keyLocation];
-				Instantiate(keyPrefab, keyRoom.transform.position + new Vector3(1, 0, 0), Quaternion.identity);
+        Vector3 keyCoords = keyRoom.transform.position;
+        foreach (GameObject item in items) {
+          if (item.transform.position == keyCoords) {
+            keyCoords += new Vector3(UnityEngine.Random.Range(0.5f, 1f), UnityEngine.Random.Range(0.5f, 1), 0f);
+          }
+        }
+
+        foreach (Key key in keys) {
+          if (key.gameObject.transform.position == keyCoords) {
+            keyCoords += new Vector3(UnityEngine.Random.Range(0.5f, 1f), UnityEngine.Random.Range(0.5f, 1), 0f);
+          }
+        }
+				Key k = Instantiate(keyPrefab, keyCoords, Quaternion.identity);
+        keys.Add(k);
 			}
 		}
 
-		Debug.Log("Placing weapons...");
+		Debug.Log("Placing weapons and items...");
 
 		foreach (GameObject itemPrefab in itemPrefabs) {
 			int location = UnityEngine.Random.Range(1, generatedRooms.Count - 1);
-				Room weaponRoom = generatedRooms[location];
-			Instantiate(itemPrefab, weaponRoom.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
+			Room weaponRoom = generatedRooms[location];
+      Vector3 weaponCoords = weaponRoom.transform.position + new Vector3(0, 1, 0);
+      foreach (GameObject otherItem in items) {
+        if (otherItem.transform.position == weaponCoords) {
+          weaponCoords += new Vector3(UnityEngine.Random.Range(0.5f, 1f), UnityEngine.Random.Range(0.5f, 1), 0f);
+        }
+      }
+
+      foreach (Key key in keys) {
+        if (key.gameObject.transform.position == weaponCoords) {
+          weaponCoords += new Vector3(UnityEngine.Random.Range(0.5f, 1f), UnityEngine.Random.Range(0.5f, 1), 0f);
+        }
+      }
+			GameObject item = Instantiate(itemPrefab, weaponCoords, Quaternion.identity);
+      items.Add(item);
 		}
-
-//		foreach (MeleeWeapon meleePrefab in meleeWeaponPrefabs) {
-//			int location = UnityEngine.Random.Range(1, generatedRooms.Count - 1);
-//				Room weaponRoom = generatedRooms[location];
-//			Instantiate(meleePrefab, weaponRoom.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
-//		}
-//
-//		for (int i = 0; i < rangedWeaponPrefabs.Count; i++) {
-//			int location = UnityEngine.Random.Range(1, generatedRooms.Count - 1);
-//			Room weaponRoom = generatedRooms[location];
-//			RangedWeapon rangedPrefab = rangedWeaponPrefabs[i];
-//			Projectile projectilePrefab = projectilePrefabs[i];
-//			Instantiate(rangedPrefab, weaponRoom.transform.position + new Vector3(0, 1, 0), Quaternion.identity);
-//			Instantiate(projectilePrefab, weaponRoom.transform.position + new Vector3(1, 0, 0), Quaternion.identity);
-//		}
-
-//		int ringLocation = UnityEngine.Random.Range(1, generatedRooms.Count - 1);
-//		Room ringRoom = generatedRooms[ringLocation];
-//		Instantiate(ringPrefab, ringRoom.transform.position + new Vector3(-1, 0, 0), Quaternion.identity);
 
 		Debug.Log("Dungeon generated!");
 	}
