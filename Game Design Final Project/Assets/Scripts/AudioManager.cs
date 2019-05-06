@@ -20,6 +20,7 @@ public class AudioManager : MonoBehaviour {
 	public AudioClip alertSfx;
 	public AudioClip breakSfx;
 	public AudioClip hitSfx;
+	public AudioClip openDoorSfx;
 
 	AudioSource source;
 

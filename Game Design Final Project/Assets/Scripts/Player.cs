@@ -233,6 +233,7 @@ public class Player : Actor {
 		if (collision.gameObject.tag == "LockedDoor") {
 			if (keys > 0) {
 				keys--;
+				AudioManager.playSFX(AudioManager.instance.openDoorSfx);
 				collision.gameObject.SetActive(false);
 			}
 		}

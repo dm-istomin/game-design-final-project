@@ -153,3 +153,4 @@ MonoBehaviour:
   alertSfx: {fileID: 8300000, guid: f60f075038e8d48eba4a19db67cc5dfc, type: 3}
   breakSfx: {fileID: 8300000, guid: c4ed10c7c9f1f46ae8608112d31a03e3, type: 3}
   hitSfx: {fileID: 8300000, guid: c4ed10c7c9f1f46ae8608112d31a03e3, type: 3}
+  openDoorSfx: {fileID: 8300000, guid: 70412dd8cd6a54ad2b4d33eac0cbcf76, type: 3}
