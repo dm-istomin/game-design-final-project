@@ -88,7 +88,7 @@ Animator:
   m_GameObject: {fileID: 1152999375978824}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: 078d819c42a2646b182b441b1437b3c2, type: 2}
+  m_Controller: {fileID: 22100000, guid: 9a10128c898d6460aa4eff487e32b80d, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -129,6 +129,11 @@ MonoBehaviour:
   rangedControllerRight: {fileID: 22100000, guid: 1129cd390b2c744b98aecc9ad9d0c5c9,
     type: 2}
   rangedControllerDown: {fileID: 22100000, guid: 9a10128c898d6460aa4eff487e32b80d,
+    type: 2}
+  invisControllerUp: {fileID: 22100000, guid: 99a585b4ba75d42bd87aef4cd0eb5929, type: 2}
+  invisControllerRight: {fileID: 22100000, guid: 0af7b7df7a75b4765ad689de622c089a,
+    type: 2}
+  invisControllerDown: {fileID: 22100000, guid: 946ae8038af0248d1860626769f81b2e,
     type: 2}
   weaponUI: {fileID: 0}
   ammoUI: {fileID: 0}

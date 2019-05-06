@@ -12,6 +12,7 @@ public class Projectile : MonoBehaviour {
 
 	new Rigidbody2D rigidbody;
 	int opponentLayer = -1;
+	Vector3 originalVelocity;
 
 	void Awake() {
 		rigidbody = GetComponent<Rigidbody2D>();
@@ -20,6 +21,7 @@ public class Projectile : MonoBehaviour {
 
 	public void initailize(Vector3 direction, int opponentLayer) {
 		rigidbody.velocity = direction.normalized * speed;
+		originalVelocity = rigidbody.velocity;
 		this.opponentLayer = opponentLayer;
 	}
 	
@@ -30,10 +32,13 @@ public class Projectile : MonoBehaviour {
 		if (c.gameObject.layer == opponentLayer && opponentLayer != -1) {
 			Breakable b = c.gameObject.GetComponent<Breakable>();
 			if (b == null) {
-				c.gameObject.GetComponent<Actor>().takeDamage(damage);
+				Actor enemy = c.gameObject.GetComponent<Actor>();
+				enemy.takeDamage(damage);
+				FXManager.instance.playFX(FXManager.instance.hitFXPrefab, enemy.transform.position, originalVelocity);
 			}
 			else {
 				b.takeDamage();
+				FXManager.instance.playFX(FXManager.instance.hitFXPrefab, b.transform.position, originalVelocity);
 			}
 		}
 		Destroy(gameObject);

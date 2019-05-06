@@ -46,6 +46,9 @@ public class Enemy : Actor {
 	float waitTimer;
 	float attackTimer;
 	float speed;
+	float chaseTimer;
+
+	const float MAX_CHASE_TIME_WITHOUT_SEEING_PLAYER = 5f;
 
 	Vector3 destination {
 		get {
@@ -108,7 +111,7 @@ public class Enemy : Actor {
 				}
 			}
 			else if (value == State.Alert) {
-				AudioManager.playSFX(AudioManager.instance.alertSfx);
+				AudioManager.playSFX(AudioManager.instance.alertSfx, 0.5f);
 				waitTimer = ALERT_PAUSE_DURATION;
 				speed = chaseSpeed;
 				destination = Player.instance.transform.position;
@@ -119,6 +122,7 @@ public class Enemy : Actor {
 				if (_state != State.Chase) {
 					numAlertedEnemies += 1;
 				}
+				chaseTimer = MAX_CHASE_TIME_WITHOUT_SEEING_PLAYER;
 			}
 			_state = value;
 		}
@@ -239,6 +243,7 @@ public class Enemy : Actor {
 		}
 		else if (state == State.Chase) {
 			if (playerTracked()) {
+				chaseTimer = MAX_CHASE_TIME_WITHOUT_SEEING_PLAYER;
 				// Updates the destination if the player moved too much from the destination
 				if ((destination - Player.instance.transform.position).sqrMagnitude > ALLOWABLE_DESTINATION_ERROR_SQR) {
 					destination = Player.instance.transform.position;
@@ -256,10 +261,17 @@ public class Enemy : Actor {
 				// Arrived at the last known location of the player and he's still out of sight
 				state = State.Wander;
 			}
+			else {
+				chaseTimer -= Time.deltaTime;
+				if (chaseTimer <= 0) {
+					state = State.Wander; // He can't reach his destination but he hasn't seen the player in a while, go into wander state
+				}
+			}
 		}
 	}
 
 	public override void takeDamage(int damage) {
+		AudioManager.playSFX(AudioManager.instance.hitSfx);
 		if (state == State.Chase) {
 			hp -= damage;
 		}

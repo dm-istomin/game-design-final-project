@@ -18,6 +18,8 @@ public class AudioManager : MonoBehaviour {
 	public AudioClip potionUseSfx;
 	public AudioClip hurtSfx;
 	public AudioClip alertSfx;
+	public AudioClip breakSfx;
+	public AudioClip hitSfx;
 
 	AudioSource source;
 
@@ -46,8 +48,8 @@ public class AudioManager : MonoBehaviour {
 		}
 	}
 
-	public static void playSFX(AudioClip clip) {
-		instance.source.PlayOneShot(clip);
+	public static void playSFX(AudioClip clip, float volumeScale = 1f) {
+		instance.source.PlayOneShot(clip, volumeScale);
 	}
 
 	static void playWorldBGM() {

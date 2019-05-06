@@ -68,6 +68,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a31ec244cc3404fd18be3233a264a157, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  brokenSprite: {fileID: 21300000, guid: 2d774cb59e3514354b8f5587c4513383, type: 3}
+  potionPrefab: {fileID: 1358713520624076, guid: be388c8dad67847f8bce2e80c960cc0d,
+    type: 2}
 --- !u!212 &212899448568745650
 SpriteRenderer:
   m_ObjectHideFlags: 1

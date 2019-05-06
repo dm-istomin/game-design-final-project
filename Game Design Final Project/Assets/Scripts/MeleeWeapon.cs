@@ -13,10 +13,15 @@ public class MeleeWeapon : Weapon {
 		foreach (RaycastHit2D hit in hitInfos) {
 			Breakable b = hit.collider.gameObject.GetComponent<Breakable>();
 			if (b == null) {
-				hit.collider.gameObject.GetComponent<Actor>().takeDamage(damage);
+				Actor enemy = hit.collider.gameObject.GetComponent<Actor>();
+				enemy.takeDamage(damage);
+				Vector3 midPoint = (actor.transform.position + enemy.transform.position) / 2f;
+				FXManager.instance.playFX(FXManager.instance.hitFXPrefab, midPoint, actor.getForward());
 			}
 			else {
 				b.takeDamage();
+				Vector3 midPoint = (actor.transform.position + b.transform.position) / 2f;
+				FXManager.instance.playFX(FXManager.instance.hitFXPrefab, midPoint, actor.getForward());
 			}
 		}
 	}
