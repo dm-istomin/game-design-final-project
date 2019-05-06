@@ -10,6 +10,7 @@ public class AudioManager : MonoBehaviour {
 	[SerializeField] AudioClip worldBGM;
 	[SerializeField] AudioClip dangerBGM;
 	[SerializeField] AudioClip menuBGM;
+	[SerializeField] AudioClip gameOverBGM;
 	public AudioClip keySfx;
 	public AudioClip pickupSfx;
 	public AudioClip ringUseSfx;
@@ -41,8 +42,11 @@ public class AudioManager : MonoBehaviour {
 		if (listener != null) {
 			Destroy(listener);
 		}
-		if (scene.buildIndex == 1) {
+		if (scene.name == "Playtest") {
 			playWorldBGM();
+		}
+		else if (scene.name == "Game Over") {
+			playGameOverBGM();
 		}
 		else {
 			playMenuBGM();
@@ -60,6 +64,11 @@ public class AudioManager : MonoBehaviour {
 
 	static void playMenuBGM() {
 		instance.source.clip = instance.menuBGM;
+		instance.source.Play();
+	}
+
+	static void playGameOverBGM() {
+		instance.source.clip = instance.gameOverBGM;
 		instance.source.Play();
 	}
 

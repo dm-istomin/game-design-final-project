@@ -143,6 +143,7 @@ MonoBehaviour:
   worldBGM: {fileID: 8300000, guid: 4be5a0257cfe3473a8467671c7860477, type: 3}
   dangerBGM: {fileID: 8300000, guid: 4ae9a0ec0d441425a8154c06fe0d8fb7, type: 3}
   menuBGM: {fileID: 8300000, guid: 4be5a0257cfe3473a8467671c7860477, type: 3}
+  gameOverBGM: {fileID: 8300000, guid: 4be5a0257cfe3473a8467671c7860477, type: 3}
   keySfx: {fileID: 8300000, guid: 1a1bef4cb32c044dca1bc348f6bf3fee, type: 3}
   pickupSfx: {fileID: 8300000, guid: a53cc6988f8b3458bb5b3e9bf5195360, type: 3}
   ringUseSfx: {fileID: 8300000, guid: 2b489177d36f94a61a8ce294f729018a, type: 3}
