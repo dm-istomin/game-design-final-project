@@ -56,6 +56,7 @@ MonoBehaviour:
   mainRoomPrefabs:
   - {fileID: 114132345596509276, guid: 0c724c30e989d4fedaff957d50bf235f, type: 2}
   - {fileID: 114665842069603610, guid: ebd9bdf75bd1344d9b5e34b8d73ce980, type: 2}
+  - {fileID: 114247993056983866, guid: 05bb47d0c50294aa1843e9a7155ee06f, type: 2}
   - {fileID: 114386607529430762, guid: 1e074a71287994dcb99c690b4333db45, type: 2}
   startingRoomPrefab: {fileID: 114530140643992674, guid: 6fad42a5a298b43e9a619f4fe2c73d48,
     type: 2}
@@ -65,6 +66,7 @@ MonoBehaviour:
     type: 2}
   yAxisCorridorPrefab: {fileID: 114537937185065612, guid: f5dd134a516d84db2af0555b94919b8b,
     type: 2}
+  player: {fileID: 0}
   itemPrefabs:
   - {fileID: 1358713520624076, guid: be388c8dad67847f8bce2e80c960cc0d, type: 2}
   - {fileID: 1322179140443316, guid: b29e0e354774b42d994f24997b6c3974, type: 2}
@@ -72,6 +74,8 @@ MonoBehaviour:
   - {fileID: 1354133891537864, guid: 4a888e86027124f9ab8759e79d39d13b, type: 2}
   keyPrefab: {fileID: 114110122112915160, guid: 5b45cd00bf85346a6bfe0135db65f759,
     type: 2}
+  seed: 1
+  dungeonsBeaten: 0
   numRoomsToGenerate: 15
   maxIterations: 30
   numKeys: 3

@@ -11,6 +11,7 @@ public class FXManager : MonoBehaviour {
 	public GameObject potionPrefab;
 
 	void Awake() {
+    // this is a comment
 		if (instance == null) {
 			instance = this;
 			DontDestroyOnLoad(gameObject);
