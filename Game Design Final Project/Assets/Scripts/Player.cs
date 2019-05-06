@@ -28,11 +28,16 @@ public class Player : Actor {
 	[SerializeField] AnimatorOverrideController rangedControllerUp;
 	[SerializeField] AnimatorOverrideController rangedControllerRight;
 	[SerializeField] AnimatorOverrideController rangedControllerDown;
+	[SerializeField] AnimatorOverrideController invisControllerUp;
+	[SerializeField] AnimatorOverrideController invisControllerRight;
+	[SerializeField] AnimatorOverrideController invisControllerDown;
 
 	float invincibleTimer = 0f;
 
 	public Image weaponUI;
 	public Text ammoUI;
+
+	Animation weaponUIAnimation;
 
 	public int keys {
 		get {
@@ -48,10 +53,12 @@ public class Player : Actor {
 	new void Awake() {
 		base.Awake();
 		Enemy.resetNumAlertedEnemies();
+		Breakable.potionsProvided = 0;
 		instance = this;
 		if (gameObject.layer != Layers.PLAYER) {
 			Debug.LogWarning("The player is not set to the Player layer");
 		}
+		weaponUIAnimation = weaponUI.GetComponentInParent<Animation>();
 		hp = MAX_HP;
 		updateAmmo();
 		updateOverrideControllerType();
@@ -126,6 +133,7 @@ public class Player : Actor {
 						weapon.gameObject.SetActive(false);
 						weaponUI.enabled = true;
 						weaponUI.sprite = weapon.GetComponent<SpriteRenderer>().sprite;
+						weaponUIAnimation.Play();
 						updateAmmo();
 						updateOverrideControllerType();
 						AudioManager.playSFX(AudioManager.instance.pickupSfx);
@@ -171,9 +179,9 @@ public class Player : Actor {
 		}
 		else {
 			// Invisibility Ring
-			controllerUp = rangedControllerUp;
-			controllerRight = rangedControllerRight;
-			controllerDown = rangedControllerDown;
+			controllerUp = invisControllerUp;
+			controllerRight = invisControllerRight;
+			controllerDown = invisControllerDown;
 		}
 		updateOverrideController();
 	}
