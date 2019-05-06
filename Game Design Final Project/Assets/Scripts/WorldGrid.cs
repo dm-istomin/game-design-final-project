@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class WorldGrid : MonoBehaviour {
+  public static int dungeonsBeaten = 0;
 	public bool enabled = true;
 	public List<Room> mainRoomPrefabs;
 	public Room startingRoomPrefab;
@@ -12,9 +13,11 @@ public class WorldGrid : MonoBehaviour {
 	public Room xAxisCorridorPrefab;
 	public Room yAxisCorridorPrefab;
 
+  public Player player;
 	public List<GameObject> itemPrefabs;
 	public Key keyPrefab;
 
+  public int seed;
 	public int numRoomsToGenerate = 10;
 	public int maxIterations = 50;
 	public int numKeys = 3;
@@ -72,7 +75,13 @@ public class WorldGrid : MonoBehaviour {
 		RoomConnector entrance = null;
 
 		List<RoomConnector> shuffledExits = new List<RoomConnector>();
-		System.Random rand = new System.Random();
+		System.Random rand; 
+
+    if (seed == 0) {
+      rand = new System.Random();
+    }
+
+    rand = new System.Random(seed);
 
 		for (int i = 0; i < room.exits.Count; i++) {
 			shuffledExits.Add(room.exits[rand.Next(0, room.exits.Count)]);
@@ -181,10 +190,19 @@ public class WorldGrid : MonoBehaviour {
 		return false;
 	}
 
-	void Start() {
+  void Start () {
 		if (!enabled) {
 			return;
 		}
+
+    if (seed != 0) {
+      UnityEngine.Random.seed = seed;
+    }
+
+    GenerateDungeon();
+  }
+
+	void GenerateDungeon() {
 		int numIterations = 0;
 
 		Debug.Log("Generating initial room...");
